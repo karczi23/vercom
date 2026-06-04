@@ -9,9 +9,15 @@ description: "Task list template for feature implementation"
 
 **Prerequisites**: plan.md (required), spec.md (required for user stories), research.md, data-model.md, contracts/
 
-**Tests**: Include automated test tasks for behavior crossing module, API,
-persistence, security, or user-facing boundaries. If automation is not practical,
-include a manual validation task with the documented rationale from plan.md.
+**Clarifications**: Tasks MUST NOT imply unresolved decisions. If a task depends
+on unanswered behavior, data, API, security, architecture, testing, container, or
+release-workflow choices, add a blocking clarification task instead of choosing a
+default.
+
+**Tests**: Include unit test tasks for every major function and automated test
+tasks for behavior crossing module, API, persistence, security, or user-facing
+boundaries. If automation is not practical, include a manual validation task with
+the documented rationale from plan.md.
 
 **Organization**: Tasks are grouped by user story to enable independent implementation and testing of each story.
 
@@ -24,7 +30,7 @@ include a manual validation task with the documented rationale from plan.md.
 ## Path Conventions
 
 - **Single project**: `src/`, `tests/` at repository root
-- **Web app**: `backend/src/`, `frontend/src/`
+- **Web app**: `backend/src/`, `frontend/src/`, separate backend/db containers
 - **Mobile**: `api/src/`, `ios/src/` or `android/src/`
 - Paths shown below assume single project - adjust based on plan.md structure
 
@@ -52,9 +58,11 @@ include a manual validation task with the documented rationale from plan.md.
 **Purpose**: Project initialization and basic structure
 
 - [ ] T001 Create project structure per implementation plan
-- [ ] T002 Initialize [language] project with [framework] dependencies
+- [ ] T002 Initialize TypeScript project with strict mode enabled
 - [ ] T003 [P] Configure linting and formatting tools
-- [ ] T004 [P] Configure test or validation commands documented in plan.md
+- [ ] T004 [P] Configure unit, contract, and integration test commands documented in plan.md
+- [ ] T005 [P] Create separate container definitions for backend, db, and supporting services
+- [ ] T006 Resolve all blocking clarification questions documented in spec.md or plan.md
 
 ---
 
@@ -66,13 +74,16 @@ include a manual validation task with the documented rationale from plan.md.
 
 Examples of foundational tasks (adjust based on your project):
 
-- [ ] T005 Setup database schema and migrations framework
-- [ ] T006 [P] Implement authentication/authorization framework
-- [ ] T007 [P] Setup API routing and middleware structure
-- [ ] T008 Create base models/entities that all stories depend on
-- [ ] T009 Configure error handling and logging infrastructure
-- [ ] T010 Setup environment configuration management
-- [ ] T011 [P] Add data validation, retention, or privacy controls required by plan.md
+- [ ] T007 Setup ORM schema and migrations framework without direct SQL invocations
+- [ ] T008 [P] Implement authentication/authorization framework
+- [ ] T009 [P] Setup API routing and middleware structure
+- [ ] T010 Generate or wire endpoint validation from the OpenAPI specification
+- [ ] T011 Configure 10 requests/minute rate limiting per caller
+- [ ] T012 Create base models/entities that all stories depend on
+- [ ] T013 Configure external API timeout, retry, fallback, and logging utilities
+- [ ] T014 Setup environment configuration management
+- [ ] T015 [P] Add data validation, retention, or privacy controls required by plan.md
+- [ ] T016 [P] Add asynchronous communication infrastructure required by plan.md
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -88,20 +99,23 @@ Examples of foundational tasks (adjust based on your project):
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T012 [P] [US1] Contract test for [endpoint] in tests/contract/test_[name].py
-- [ ] T013 [P] [US1] Integration test for [user journey] in tests/integration/test_[name].py
-- [ ] T014 [US1] Manual validation for [scenario] documented in quickstart.md
+- [ ] T017 [P] [US1] Unit tests for major functions in tests/unit/[name].test.ts
+- [ ] T018 [P] [US1] Contract test for OpenAPI validation in tests/contract/[name].test.ts
+- [ ] T019 [P] [US1] Integration test for [user journey] in tests/integration/[name].test.ts
+- [ ] T020 [P] [US1] Rate-limit test for 10 requests/minute behavior
+- [ ] T021 [US1] Manual validation for [scenario] documented in quickstart.md
 
 ### Implementation for User Story 1
 
-- [ ] T015 [P] [US1] Create [Entity1] model in src/models/[entity1].py
-- [ ] T016 [P] [US1] Create [Entity2] model in src/models/[entity2].py
-- [ ] T017 [US1] Implement [Service] in src/services/[service].py (depends on T015, T016)
-- [ ] T018 [US1] Implement [endpoint/feature] in src/[location]/[file].py
-- [ ] T019 [US1] Add validation and safe error handling
-- [ ] T020 [US1] Add logging for user story 1 operations
+- [ ] T022 [P] [US1] Create [Entity1] ORM model in src/models/[entity1].ts
+- [ ] T023 [P] [US1] Create [Entity2] ORM model in src/models/[entity2].ts
+- [ ] T024 [US1] Implement [Service] in src/services/[service].ts (depends on T022, T023)
+- [ ] T025 [US1] Implement [endpoint/feature] in src/[location]/[file].ts
+- [ ] T026 [US1] Add OpenAPI-derived validation and safe error handling
+- [ ] T027 [US1] Add asynchronous communication for user story 1 operations
+- [ ] T028 [US1] Add logging for user story 1 operations
 
-**Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
+**Checkpoint**: At this point, User Story 1 MUST be fully functional and testable independently
 
 ---
 
@@ -113,18 +127,19 @@ Examples of foundational tasks (adjust based on your project):
 
 ### Tests and Validation for User Story 2
 
-- [ ] T021 [P] [US2] Contract test for [endpoint] in tests/contract/test_[name].py
-- [ ] T022 [P] [US2] Integration test for [user journey] in tests/integration/test_[name].py
-- [ ] T023 [US2] Manual validation for [scenario] documented in quickstart.md
+- [ ] T029 [P] [US2] Unit tests for major functions in tests/unit/[name].test.ts
+- [ ] T030 [P] [US2] Contract test for OpenAPI validation in tests/contract/[name].test.ts
+- [ ] T031 [P] [US2] Integration test for [user journey] in tests/integration/[name].test.ts
+- [ ] T032 [US2] Manual validation for [scenario] documented in quickstart.md
 
 ### Implementation for User Story 2
 
-- [ ] T024 [P] [US2] Create [Entity] model in src/models/[entity].py
-- [ ] T025 [US2] Implement [Service] in src/services/[service].py
-- [ ] T026 [US2] Implement [endpoint/feature] in src/[location]/[file].py
-- [ ] T027 [US2] Integrate with User Story 1 components (if needed)
+- [ ] T033 [P] [US2] Create [Entity] ORM model in src/models/[entity].ts
+- [ ] T034 [US2] Implement [Service] in src/services/[service].ts
+- [ ] T035 [US2] Implement [endpoint/feature] in src/[location]/[file].ts
+- [ ] T036 [US2] Integrate with User Story 1 components asynchronously (if needed)
 
-**Checkpoint**: At this point, User Stories 1 AND 2 should both work independently
+**Checkpoint**: At this point, User Stories 1 AND 2 MUST both work independently
 
 ---
 
@@ -136,17 +151,18 @@ Examples of foundational tasks (adjust based on your project):
 
 ### Tests and Validation for User Story 3
 
-- [ ] T028 [P] [US3] Contract test for [endpoint] in tests/contract/test_[name].py
-- [ ] T029 [P] [US3] Integration test for [user journey] in tests/integration/test_[name].py
-- [ ] T030 [US3] Manual validation for [scenario] documented in quickstart.md
+- [ ] T037 [P] [US3] Unit tests for major functions in tests/unit/[name].test.ts
+- [ ] T038 [P] [US3] Contract test for OpenAPI validation in tests/contract/[name].test.ts
+- [ ] T039 [P] [US3] Integration test for [user journey] in tests/integration/[name].test.ts
+- [ ] T040 [US3] Manual validation for [scenario] documented in quickstart.md
 
 ### Implementation for User Story 3
 
-- [ ] T031 [P] [US3] Create [Entity] model in src/models/[entity].py
-- [ ] T032 [US3] Implement [Service] in src/services/[service].py
-- [ ] T033 [US3] Implement [endpoint/feature] in src/[location]/[file].py
+- [ ] T041 [P] [US3] Create [Entity] ORM model in src/models/[entity].ts
+- [ ] T042 [US3] Implement [Service] in src/services/[service].ts
+- [ ] T043 [US3] Implement [endpoint/feature] in src/[location]/[file].ts
 
-**Checkpoint**: All user stories should now be independently functional
+**Checkpoint**: All user stories MUST now be independently functional
 
 ---
 
@@ -163,6 +179,10 @@ Examples of foundational tasks (adjust based on your project):
 - [ ] TXXX Performance optimization across all stories
 - [ ] TXXX [P] Additional unit tests in tests/unit/
 - [ ] TXXX Security hardening
+- [ ] TXXX Confirm all endpoint validators are generated or derived from OpenAPI
+- [ ] TXXX Confirm no direct SQL invocations exist outside ORM migrations/tooling
+- [ ] TXXX Confirm all external API failures are handled gracefully
+- [ ] TXXX Validate container startup for backend, db, and supporting services
 - [ ] TXXX Review logs, configuration, and operational notes
 - [ ] TXXX Confirm no secrets or sensitive data are committed or logged
 - [ ] TXXX Run quickstart.md validation
@@ -183,15 +203,18 @@ Examples of foundational tasks (adjust based on your project):
 ### User Story Dependencies
 
 - **User Story 1 (P1)**: Can start after Foundational (Phase 2) - No dependencies on other stories
-- **User Story 2 (P2)**: Can start after Foundational (Phase 2) - May integrate with US1 but should be independently testable
-- **User Story 3 (P3)**: Can start after Foundational (Phase 2) - May integrate with US1/US2 but should be independently testable
+- **User Story 2 (P2)**: Can start after Foundational (Phase 2) - May integrate with US1 but MUST remain independently testable
+- **User Story 3 (P3)**: Can start after Foundational (Phase 2) - May integrate with US1/US2 but MUST remain independently testable
 
 ### Within Each User Story
 
 - Tests or validation tasks MUST be written before implementation
 - Automated tests SHOULD fail before implementation when applicable
+- Blocking clarification questions before tasks that depend on their answers
+- Major functions before their dependent endpoints
 - Models before services
 - Services before endpoints
+- OpenAPI contract before endpoint validators
 - Core implementation before integration
 - Story complete before moving to next priority
 
@@ -209,13 +232,14 @@ Examples of foundational tasks (adjust based on your project):
 ## Parallel Example: User Story 1
 
 ```bash
-# Launch all tests for User Story 1 together (if tests requested):
-Task: "Contract test for [endpoint] in tests/contract/test_[name].py"
-Task: "Integration test for [user journey] in tests/integration/test_[name].py"
+# Launch all tests for User Story 1 together:
+Task: "Unit tests for major functions in tests/unit/[name].test.ts"
+Task: "Contract test for OpenAPI validation in tests/contract/[name].test.ts"
+Task: "Integration test for [user journey] in tests/integration/[name].test.ts"
 
 # Launch all models for User Story 1 together:
-Task: "Create [Entity1] model in src/models/[entity1].py"
-Task: "Create [Entity2] model in src/models/[entity2].py"
+Task: "Create [Entity1] ORM model in src/models/[entity1].ts"
+Task: "Create [Entity2] ORM model in src/models/[entity2].ts"
 ```
 
 ---
@@ -255,8 +279,9 @@ With multiple developers:
 
 - [P] tasks = different files, no dependencies
 - [Story] label maps task to specific user story for traceability
-- Each user story should be independently completable and testable
+- Each user story MUST be independently completable and testable
 - Verify tests fail before implementing
-- Commit after each task or logical group
+- Commit surgical, precise changes after each task or logical group
+- Never push directly to main; use feature branches and owner-accepted PRs
 - Stop at any checkpoint to validate story independently
 - Avoid: vague tasks, same file conflicts, cross-story dependencies that break independence

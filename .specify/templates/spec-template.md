@@ -11,9 +11,9 @@
 ## User Scenarios & Testing *(mandatory)*
 
 <!--
-  IMPORTANT: User stories should be PRIORITIZED as user journeys ordered by importance.
+  IMPORTANT: User stories MUST be PRIORITIZED as user journeys ordered by importance.
   Each user story/journey must be INDEPENDENTLY TESTABLE - meaning if you implement just ONE of them,
-  you should still have a viable MVP (Minimum Viable Product) that delivers value.
+  it still delivers a viable MVP (Minimum Viable Product) with user value.
 
   Assign priorities (P1, P2, P3, etc.) to each story, where P1 is the most critical.
   Think of each story as a standalone slice of functionality that can be:
@@ -79,6 +79,8 @@
 - How does system handle [error scenario]?
 - What data, permission, or privacy boundary could be crossed accidentally?
 - What recovery path is available when a dependency or external system fails?
+- How is the 10 requests/minute rate limit surfaced to callers?
+- What asynchronous delivery or retry behavior is visible to users?
 
 ## Requirements *(mandatory)*
 
@@ -94,11 +96,14 @@
 - **FR-003**: Users MUST be able to [key interaction, e.g., "reset their password"]
 - **FR-004**: System MUST [data requirement, e.g., "persist user preferences"]
 - **FR-005**: System MUST [behavior, e.g., "log all security events"]
+- **FR-006**: Every endpoint MUST validate input and output using rules derived from the OpenAPI specification
+- **FR-007**: API requests MUST be rate limited to 10 requests per minute per caller unless a stricter limit is specified
+- **FR-008**: External API failures MUST return a graceful result with actionable logging and no sensitive data leakage
 
 *Example of marking unclear requirements:*
 
-- **FR-006**: System MUST authenticate users via [NEEDS CLARIFICATION: auth method not specified - email/password, SSO, OAuth?]
-- **FR-007**: System MUST retain user data for [NEEDS CLARIFICATION: retention period not specified]
+- **FR-009**: System MUST authenticate users via [NEEDS CLARIFICATION: auth method not specified - email/password, SSO, OAuth?]
+- **FR-010**: System MUST retain user data for [NEEDS CLARIFICATION: retention period not specified]
 
 ### Key Entities *(include if feature involves data)*
 
@@ -122,9 +127,10 @@
 ## Assumptions
 
 <!--
-  ACTION REQUIRED: The content in this section represents placeholders.
-  Fill them out with the right assumptions based on reasonable defaults
-  chosen when the feature description did not specify certain details.
+  ACTION REQUIRED: Only list non-blocking defaults here. Do not imply unresolved
+  decisions. If an answer could change user-visible behavior, security, data
+  handling, API contracts, architecture, tests, containers, or release scope,
+  ask it as a specific clarification question instead.
 -->
 
 - [Assumption about target users, e.g., "Users have stable internet connectivity"]
@@ -132,9 +138,19 @@
 - [Assumption about data/environment, e.g., "Existing authentication system will be reused"]
 - [Dependency on existing system/service, e.g., "Requires access to the existing user profile API"]
 
+## Clarification Questions *(mandatory if unresolved decisions exist)*
+
+- **CQ-001**: [Specific question for the project owner, with affected decision and impact]
+- **CQ-002**: [Specific question for the project owner, with affected decision and impact]
+
 ## Constitutional Considerations *(mandatory)*
 
 - **User Value**: [How the highest-priority story delivers independently useful value]
 - **Verification**: [Automated or manual validation expected for each story]
-- **Data/Security**: [Data handled, authorization expectations, privacy constraints, or N/A]
-- **Operations**: [Logging, configuration, support, or documentation expectations]
+- **OpenAPI/Validation**: [Endpoints affected, contract source, validation generation, or N/A]
+- **Data/Security**: [Data handled, authorization, ORM persistence, privacy constraints, or N/A]
+- **Rate Limiting**: [10 requests/minute behavior, stricter limit, or N/A]
+- **Async Communication**: [Async interaction model, delivery expectations, or N/A]
+- **External API Failure**: [Timeouts, fallback result, user-facing behavior, or N/A]
+- **Operations**: [Logging, configuration, containers, support, or documentation expectations]
+- **Unresolved Decisions**: [Specific owner-facing questions still pending, or N/A]

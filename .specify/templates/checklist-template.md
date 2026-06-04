@@ -38,6 +38,12 @@
 - [ ] CHKXXX Architecture, dependencies, and simpler alternatives are documented
 - [ ] CHKXXX Verification covers each independent user story
 - [ ] CHKXXX Data, security, and operational requirements are addressed
+- [ ] CHKXXX TypeScript strict mode and unit tests for major functions are covered
+- [ ] CHKXXX OpenAPI-derived endpoint validation and 10 requests/minute rate limiting are covered
+- [ ] CHKXXX ORM-only persistence and no direct SQL usage are covered
+- [ ] CHKXXX Async communication and graceful external API failures are covered
+- [ ] CHKXXX Separate backend/db containers and PR-only main workflow are covered
+- [ ] CHKXXX No unresolved decision is implied; specific clarification questions are captured
 
 ## Notes
 
