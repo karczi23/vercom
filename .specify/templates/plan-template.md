@@ -18,11 +18,11 @@
   the iteration process.
 -->
 
-**Language/Version**: [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION]
+**Language/Version**: [TypeScript version, strict mode enabled, or NEEDS CLARIFICATION]
 
 **Primary Dependencies**: [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]
 
-**Storage**: [if applicable, e.g., PostgreSQL, CoreData, files or N/A]
+**Storage**: [ORM + database, migrations approach, or N/A]
 
 **Testing**: [e.g., pytest, XCTest, cargo test or NEEDS CLARIFICATION]
 
@@ -36,21 +36,44 @@
 
 **Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
 
+**API Contract**: [OpenAPI source path, validation generation approach, or N/A]
+
+**Rate Limits**: [Default 10 requests/minute per caller or stricter feature-specific limit]
+
+**Async Communication**: [Queues/events/promises/webhooks used, or justified synchronous boundary]
+
+**External APIs**: [Timeouts, retry policy, graceful fallback behavior, or N/A]
+
+**Container Topology**: [Separate containers for backend, db, workers, and supporting services]
+
+**Clarifications**: [All owner-answered questions that affected implementation decisions, or N/A]
+
 ## Constitution Check
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
 - **Spec-Led User Value**: Confirm prioritized user journeys, acceptance
-  scenarios, measurable outcomes, and explicit assumptions are present in spec.md.
+  scenarios, measurable outcomes, explicit assumptions, and asynchronous
+  communication expectations are present in spec.md. Confirm every unresolved
+  decision is represented as a specific owner-facing question, not an implied
+  assumption.
 - **Minimal, Explicit Architecture**: Document selected structure, real paths,
-  dependencies, runtime boundaries, and rejected simpler alternatives.
+  TypeScript strict-mode setup, dependencies, runtime boundaries, separate
+  service containers, and rejected simpler alternatives.
 - **Verifiable Increments**: Define automated tests or justified manual
-  validation for each user story and for cross-boundary behavior.
-- **Data Protection and Security by Default**: Record data ownership, retention,
-  authorization, validation, secrets handling, and safe error behavior where
-  applicable.
-- **Operable, Maintainable Systems**: Identify configuration, logging/metrics,
-  error handling, documentation, and maintenance impacts needed for support.
+  validation for each user story, major function unit tests, and cross-boundary
+  behavior.
+- **Contract-Driven Security and Data Access**: Record OpenAPI-derived endpoint
+  validation, 10 requests/minute rate limiting, ORM-only persistence, data
+  ownership, authorization, secrets handling, and safe error behavior.
+- **Operable, Containerized Systems**: Identify configuration, logging/metrics,
+  external API graceful failure handling, documentation, container operations,
+  and maintenance impacts needed for support.
+- **Pull Request and Commit Discipline**: Confirm work occurs on a feature branch,
+  commits are surgical, and main receives changes only through owner-accepted PRs.
+- **Clarification Discipline**: Confirm no plan decision depends on unanswered
+  questions about behavior, data, API contracts, security, architecture, tests,
+  containers, or release workflow.
 
 **Gate Result**: [PASS/FAIL with rationale and links to supporting sections]
 
