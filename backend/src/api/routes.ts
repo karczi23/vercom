@@ -1,7 +1,6 @@
 import type { Express } from 'express';
 import { signAccessToken } from '../auth/tokenService.js';
 import { authenticate } from '../auth/authMiddleware.js';
-import { createRateLimitMiddleware } from '../rate-limit/rateLimitMiddleware.js';
 import { ApiError } from '../common/apiErrors.js';
 import type { AppContext } from './app.js';
 import { createContactRoutes } from '../contacts/contactRoutes.js';
@@ -18,7 +17,7 @@ export function registerRoutes(app: Express, context: AppContext): void {
     }
     res.json(signAccessToken({ id: username, username, role: username === 'admin' ? 'admin' : 'operator' }, context.config.authTokenSecret));
   });
-  app.use('/api', authenticate(context.config), createRateLimitMiddleware(10));
+  app.use('/api', authenticate(context.config));
   app.use('/api', createContactRoutes(context.db));
   app.use('/api', createCampaignRoutes(context.db));
   app.use('/api', createSendRoutes(context.db));

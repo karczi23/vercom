@@ -123,7 +123,6 @@ web interface, including validation and error cases.
 - A contact is deleted after being selected for a campaign but before sending.
 - The external email delivery provider times out, rejects a recipient, or returns
   a partial failure.
-- A caller exceeds the 10 requests per minute rate limit.
 - A campaign send request is retried after an uncertain external-provider result.
 - API and MCP callers submit data that is structurally valid but semantically
   incorrect for the campaign workflow.
@@ -175,11 +174,9 @@ web interface, including validation and error cases.
   campaigns assigned to other operators.
 - **FR-018**: Every endpoint MUST validate input and output using rules derived
   from the OpenAPI specification.
-- **FR-019**: API requests MUST be rate limited to 10 requests per minute per
-  caller unless a stricter owner-approved limit is specified.
-- **FR-020**: External API failures MUST return a graceful result with actionable
+- **FR-019**: External API failures MUST return a graceful result with actionable
   logging and no sensitive data leakage.
-- **FR-021**: API and MCP requests made by operators MUST enforce the same
+- **FR-020**: API and MCP requests made by operators MUST enforce the same
   assigned-campaign restrictions as the web interface.
 
 ### Key Entities *(include if feature involves data)*
@@ -217,9 +214,7 @@ web interface, including validation and error cases.
   workflows with the same validation outcomes as the web interface.
 - **SC-006**: External delivery provider failures produce a visible campaign
   status and recovery guidance for 100% of tested failure scenarios.
-- **SC-007**: Rate-limited callers receive a clear retry response when exceeding
-  10 requests per minute.
-- **SC-008**: Operator access tests confirm that operators cannot view, edit, or
+- **SC-007**: Operator access tests confirm that operators cannot view, edit, or
   send campaigns assigned to other operators across web, API, and MCP surfaces.
 
 ## Assumptions
@@ -250,8 +245,6 @@ web interface, including validation and error cases.
   delivery information and campaign content. Admins can manage all records;
   operators can manage contacts and only their assigned campaigns across web,
   API, and MCP surfaces.
-- **Rate Limiting**: API callers are limited to 10 requests per minute unless a
-  stricter owner-approved limit is defined later.
 - **Async Communication**: Campaign sending and external delivery provider
   interaction must be handled asynchronously from user and agent requests, with
   status visible after submission.

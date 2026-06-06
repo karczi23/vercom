@@ -1,7 +1,7 @@
 # MCP Tools Contract: Mailing Campaigns
 
-All MCP tools enforce the same authorization, validation, rate limiting, and
-operator campaign assignment rules as the HTTP API.
+All MCP tools enforce the same authorization, validation, and operator campaign
+assignment rules as the HTTP API.
 
 ## contacts.list
 

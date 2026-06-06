@@ -84,13 +84,3 @@ be retried until the configured retry limit is reached.
 
 **Validation**: Provider secrets are never stored. Response summaries exclude
 sensitive headers, keys, and message payload secrets.
-
-## RateLimitEntry
-
-**Purpose**: Tracks caller request counts for 10 requests/minute enforcement.
-
-**Fields**: `id`, `callerKey`, `windowStart`, `requestCount`, `createdAt`,
-`updatedAt`.
-
-**Validation**: Caller key is derived from authenticated subject when available,
-otherwise from client source.

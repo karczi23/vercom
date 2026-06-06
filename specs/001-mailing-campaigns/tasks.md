@@ -48,15 +48,13 @@ baseline commands used by every story.
 - [X] T021 Implement safe API error response helpers in `backend/src/common/apiErrors.ts`
 - [X] T022 Implement environment configuration loader in `backend/src/common/config.ts`
 - [X] T023 Configure Drizzle PostgreSQL connection in `backend/src/db/client.ts`
-- [X] T024 Define Drizzle schema for users, contacts, campaigns, campaign recipients, send jobs, send attempts, and rate limits in `backend/src/db/schema.ts`
+- [X] T024 Define Drizzle schema for users, contacts, campaigns, campaign recipients, send jobs, and send attempts in `backend/src/db/schema.ts`
 - [X] T025 Create initial Drizzle migration for all feature-001 tables in `backend/src/db/migrations/0001_initial.ts`
 - [X] T026 Implement password hashing utilities with Argon2id in `backend/src/auth/passwordHash.ts`
 - [X] T027 Implement short-lived bearer token signing and verification in `backend/src/auth/tokenService.ts`
 - [X] T028 [P] Add unit tests for password hashing and token verification in `backend/tests/unit/auth.test.ts`
 - [X] T029 Implement authentication middleware in `backend/src/auth/authMiddleware.ts`
 - [X] T030 Implement role and assigned-campaign authorization helpers in `backend/src/auth/authorization.ts`
-- [X] T031 Implement 10 requests/minute rate limiter using Drizzle ORM in `backend/src/rate-limit/rateLimitMiddleware.ts`
-- [X] T032 [P] Add unit tests for caller-key derivation and rate-limit windows in `backend/tests/unit/rateLimit.test.ts`
 - [X] T033 Implement frontend API client with bearer token support in `frontend/src/api/client.ts`
 - [X] T034 Implement frontend auth state handling in `frontend/src/auth/authStore.ts`
 - [X] T035 Implement backend startup entrypoint in `backend/src/api/server.ts`
@@ -218,7 +216,6 @@ restrictions.
 - [X] T100 Confirm OpenAPI-derived validation is used by every endpoint in `backend/src/api/routes.ts`
 - [X] T101 Confirm no direct SQL invocations exist outside Drizzle migration/tooling files in `backend/src/db/schema.ts`
 - [X] T102 Confirm logs redact EmailLabs keys, bearer tokens, and provider secrets in `backend/src/common/logger.ts`
-- [X] T103 Confirm rate-limited callers receive retry guidance in `backend/src/rate-limit/rateLimitMiddleware.ts`
 - [ ] T104 Confirm Docker Compose starts backend, frontend, worker, MCP server, and database in `docker-compose.yml`
 - [X] T105 Run all workspace unit and contract tests with `package.json`
 - [ ] T106 Run quickstart validation and record results in `specs/001-mailing-campaigns/quickstart.md`
@@ -256,8 +253,8 @@ restrictions.
 ## Parallel Opportunities
 
 - Setup tasks marked `[P]` can run in parallel after T001 and T002.
-- Foundational auth, rate-limit tests, and API validation tests marked `[P]` can
-  run in parallel once package setup exists.
+- Foundational auth tests and API validation tests marked `[P]` can run in
+  parallel once package setup exists.
 - Within each story, unit tests and contract tests marked `[P]` can be written in
   parallel.
 - Frontend API/view tasks marked `[P]` can run after corresponding DTOs and API

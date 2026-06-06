@@ -7,7 +7,7 @@ sends, and exposing equivalent API and MCP workflows.
 ## Services
 
 - `backend`: Express API with OpenAPI-derived validation, authentication,
-  authorization, rate limiting, and service-layer business logic.
+  authorization, and service-layer business logic.
 - `frontend`: React application for contact and campaign operators.
 - `worker`: asynchronous campaign sender that submits prepared work to EmailLabs.
 - `mcp`: MCP host exposing automation tools that reuse service-layer validation.

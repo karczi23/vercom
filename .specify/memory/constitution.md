@@ -59,13 +59,12 @@ and known test gaps MUST be recorded before release.
 
 ### IV. Contract-Driven Security and Data Access
 Every endpoint MUST validate requests and responses using validation rules derived
-from the OpenAPI specification. API traffic MUST be rate limited to 10 requests
-per minute unless a stricter limit is required by the feature. Features that read,
-write, transmit, or expose data MUST define ownership, retention, authorization,
-validation, and error-handling expectations in the spec or plan. Direct SQL
-invocations are prohibited in application code; persistence MUST use the approved
-ORM and its migration tooling. Secrets MUST never be committed, logged, or
-embedded in generated artifacts.
+from the OpenAPI specification. Features that read, write, transmit, or expose
+data MUST define ownership, retention, authorization, validation, and
+error-handling expectations in the spec or plan. Direct SQL invocations are
+prohibited in application code; persistence MUST use the approved ORM and its
+migration tooling. Secrets MUST never be committed, logged, or embedded in
+generated artifacts.
 
 ### V. Operable, Containerized Systems
 Delivered work MUST include the operational hooks needed to diagnose, support, and
@@ -105,10 +104,10 @@ design. Any violation MUST be documented in Complexity Tracking with the reason,
 the simpler alternative considered, and the mitigation.
 
 Clarification is mandatory when feature behavior, data handling, API contract,
-security, rate limiting, asynchronous communication, persistence, container
-topology, testing expectations, or release workflow is ambiguous. Work MUST pause
-at the relevant artifact until the project owner answers the specific questions
-or explicitly defers the decision with documented scope impact.
+security, asynchronous communication, persistence, container topology, testing
+expectations, or release workflow is ambiguous. Work MUST pause at the relevant
+artifact until the project owner answers the specific questions or explicitly
+defers the decision with documented scope impact.
 
 Tasks MUST be grouped by independently testable user story, with foundational
 work limited to prerequisites that block multiple stories. Each story MUST end at

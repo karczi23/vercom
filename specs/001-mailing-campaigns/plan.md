@@ -49,9 +49,6 @@ and approved MCP agents; bulk import and scheduled campaigns remain out of scope
 **API Contract**: `contracts/openapi.yaml`; backend compiles request and response
 schemas from OpenAPI with AJV
 
-**Rate Limits**: 10 requests per minute per caller for API and MCP-backed HTTP
-requests
-
 **Async Communication**: PostgreSQL-backed send jobs processed by a backend worker
 container; user/API/MCP send requests enqueue work and return status
 
@@ -81,8 +78,8 @@ short-lived bearer access tokens without token revocation
 - **Verifiable Increments**: PASS. Each story has an independent test path; unit,
   contract, and quickstart validation are required.
 - **Contract-Driven Security and Data Access**: PASS. OpenAPI plus AJV drives
-  endpoint validation, Drizzle is the only persistence layer, 10/minute rate
-  limiting is required, and access restrictions are explicit.
+  endpoint validation, Drizzle is the only persistence layer, and access
+  restrictions are explicit.
 - **Operable, Containerized Systems**: PASS. API, frontend, worker, and database
   run in separate containers; EmailLabs failures are recorded and surfaced.
 - **Pull Request and Commit Discipline**: PASS. Work is on feature branch
@@ -123,7 +120,6 @@ backend/
 │   ├── db/
 │   ├── email-labs/
 │   ├── mcp/
-│   ├── rate-limit/
 │   └── worker/
 └── tests/
     ├── contract/

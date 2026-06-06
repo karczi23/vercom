@@ -102,13 +102,3 @@ export const sendAttempts = pgTable('send_attempts', {
   failureReason: text('failure_reason'),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
 });
-
-export const rateLimitEntries = pgTable('rate_limit_entries', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  callerKey: text('caller_key').notNull(),
-  windowStart: timestamp('window_start', { withTimezone: true }).notNull(),
-  requestCount: integer('request_count').notNull().default(0),
-  ...timestamps
-}, table => ({
-  callerWindowUnique: uniqueIndex('rate_limit_entries_caller_window_unique').on(table.callerKey, table.windowStart)
-}));

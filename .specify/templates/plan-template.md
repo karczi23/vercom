@@ -38,8 +38,6 @@
 
 **API Contract**: [OpenAPI source path, validation generation approach, or N/A]
 
-**Rate Limits**: [Default 10 requests/minute per caller or stricter feature-specific limit]
-
 **Async Communication**: [Queues/events/promises/webhooks used, or justified synchronous boundary]
 
 **External APIs**: [Timeouts, retry policy, graceful fallback behavior, or N/A]
@@ -64,8 +62,8 @@
   validation for each user story, major function unit tests, and cross-boundary
   behavior.
 - **Contract-Driven Security and Data Access**: Record OpenAPI-derived endpoint
-  validation, 10 requests/minute rate limiting, ORM-only persistence, data
-  ownership, authorization, secrets handling, and safe error behavior.
+  validation, ORM-only persistence, data ownership, authorization, secrets
+  handling, and safe error behavior.
 - **Operable, Containerized Systems**: Identify configuration, logging/metrics,
   external API graceful failure handling, documentation, container operations,
   and maintenance impacts needed for support.

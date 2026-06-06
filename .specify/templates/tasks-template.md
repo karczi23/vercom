@@ -78,7 +78,6 @@ Examples of foundational tasks (adjust based on your project):
 - [ ] T008 [P] Implement authentication/authorization framework
 - [ ] T009 [P] Setup API routing and middleware structure
 - [ ] T010 Generate or wire endpoint validation from the OpenAPI specification
-- [ ] T011 Configure 10 requests/minute rate limiting per caller
 - [ ] T012 Create base models/entities that all stories depend on
 - [ ] T013 Configure external API timeout, retry, fallback, and logging utilities
 - [ ] T014 Setup environment configuration management
@@ -102,7 +101,6 @@ Examples of foundational tasks (adjust based on your project):
 - [ ] T017 [P] [US1] Unit tests for major functions in tests/unit/[name].test.ts
 - [ ] T018 [P] [US1] Contract test for OpenAPI validation in tests/contract/[name].test.ts
 - [ ] T019 [P] [US1] Integration test for [user journey] in tests/integration/[name].test.ts
-- [ ] T020 [P] [US1] Rate-limit test for 10 requests/minute behavior
 - [ ] T021 [US1] Manual validation for [scenario] documented in quickstart.md
 
 ### Implementation for User Story 1

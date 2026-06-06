@@ -59,14 +59,13 @@ npm run test:contract --workspace backend
 ## Acceptance
 
 - OpenAPI-derived validation rejects invalid requests.
-- API returns a clear retry response above 10 requests/minute.
 - No direct SQL appears in application code.
 - Failed EmailLabs calls do not leak keys and do not duplicate sends.
 
 ## Implementation Validation Notes
 
-- Unit and contract test files were added for auth, rate limiting, OpenAPI
-  validation, contact validation, contact duplicate handling, campaign
+- Unit and contract test files were added for auth, OpenAPI validation, contact
+  validation, contact duplicate handling, campaign
   placeholders, variable validation, send eligibility, EmailLabs mapping, worker
   submission, MCP tool context, MCP authorization, and operator access.
 - `npm run typecheck` passed on 2026-06-06.
