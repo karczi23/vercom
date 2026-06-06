@@ -26,7 +26,8 @@ export function ContactForm({ initial, onSubmit }: ContactFormProps) {
   }
 
   return (
-    <form onSubmit={submit}>
+    <form className="mt-5 grid gap-4 rounded-lg bg-slate-50 p-4" onSubmit={submit}>
+      <h3 className="text-base font-semibold text-slate-950">Add contact</h3>
       <label>
         Email
         <input value={email} onChange={event => setEmail(event.target.value)} />
@@ -35,8 +36,10 @@ export function ContactForm({ initial, onSubmit }: ContactFormProps) {
         Name
         <input value={name} onChange={event => setName(event.target.value)} />
       </label>
-      {error ? <p role="alert">{error}</p> : null}
-      <button type="submit">Save</button>
+      {error ? <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">{error}</p> : null}
+      <div>
+        <button type="submit">Save</button>
+      </div>
     </form>
   );
 }

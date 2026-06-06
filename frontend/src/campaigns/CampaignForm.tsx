@@ -12,15 +12,18 @@ export function CampaignForm({ onSubmit }: CampaignFormProps) {
   const [assignedOperatorId, setAssignedOperatorId] = useState('');
 
   return (
-    <form onSubmit={event => {
+    <form className="mt-5 grid gap-4 rounded-lg bg-slate-50 p-4" onSubmit={event => {
       event.preventDefault();
       void onSubmit({ name, subject, templateContent, fallbackVariables: {}, assignedOperatorId });
     }}>
+      <h3 className="text-base font-semibold text-slate-950">Create campaign</h3>
       <input aria-label="Campaign name" value={name} onChange={event => setName(event.target.value)} />
       <input aria-label="Subject" value={subject} onChange={event => setSubject(event.target.value)} />
       <textarea aria-label="Template content" value={templateContent} onChange={event => setTemplateContent(event.target.value)} />
       <input aria-label="Assigned operator" value={assignedOperatorId} onChange={event => setAssignedOperatorId(event.target.value)} />
-      <button type="submit">Save campaign</button>
+      <div>
+        <button type="submit">Save campaign</button>
+      </div>
     </form>
   );
 }
