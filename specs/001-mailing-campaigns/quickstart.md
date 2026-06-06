@@ -4,7 +4,8 @@
 
 - Docker with Docker Compose
 - Node.js for local tooling when not running entirely in containers
-- EmailLabs application key and authorization key for real send validation
+- EmailLabs application key, secret key, SMTP account, and sender address for
+  real send validation
 
 ## Environment
 
@@ -15,7 +16,9 @@ settings:
 DATABASE_URL=postgres://vercom:vercom@db:5432/vercom
 AUTH_TOKEN_SECRET=replace-with-local-secret
 EMAILLABS_APPLICATION_KEY=replace-with-key
-EMAILLABS_AUTHORIZATION=replace-with-key
+EMAILLABS_AUTHORIZATION=replace-with-secret-key
+EMAILLABS_SMTP_ACCOUNT=1.your-panel.smtp
+EMAILLABS_FROM_EMAIL=sender@example.com
 EMAILLABS_API_BASE_URL=https://api.emaillabs.net.pl
 ```
 
@@ -43,8 +46,9 @@ Expected services:
 7. Add a provider-compatible placeholder and fallback variables.
 8. Validate recipient variables and approve send readiness.
 9. Trigger send and confirm a send job is queued.
-10. Confirm worker submits template variables to EmailLabs and records success
-    or graceful failure.
+10. Confirm worker submits form-encoded `sendmail_templates` requests to
+    EmailLabs in batches of no more than 200 recipients and records success or
+    graceful failure.
 11. Log in as operator B and confirm operator B cannot view, edit, or send
     operator A's campaign.
 12. Repeat contact and campaign reads through the API and MCP tools.
@@ -61,6 +65,7 @@ npm run test:contract --workspace backend
 - OpenAPI-derived validation rejects invalid requests.
 - No direct SQL appears in application code.
 - Failed EmailLabs calls do not leak keys and do not duplicate sends.
+- EmailLabs payloads use Basic auth and `to[email][vars][name]` form fields.
 
 ## Implementation Validation Notes
 

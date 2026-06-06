@@ -20,8 +20,9 @@ Vercom validates required variables and duplicate-send safety before submission.
 **Language/Version**: TypeScript 5.x with `strict: true` for backend, frontend,
 tests, and shared type packages
 
-**Primary Dependencies**: Express.js, React, Vite, Drizzle ORM, PostgreSQL driver,
-AJV, Argon2id password hashing, Vitest, Docker Compose, MCP TypeScript SDK
+**Primary Dependencies**: Express.js, React, Vite, Tailwind CSS, Drizzle ORM,
+PostgreSQL driver, AJV, Argon2id password hashing, Vitest, Docker Compose, MCP
+TypeScript SDK
 
 **Storage**: PostgreSQL with Drizzle ORM schema and Drizzle migrations; no direct
 SQL invocations in application code
@@ -36,12 +37,13 @@ and Docker Compose
 database, and MCP server
 
 **Performance Goals**: Human contact CRUD in under 2 minutes; campaign preparation
-in under 10 minutes after contacts exist; clear retry response after 10
-requests/minute
+in under 10 minutes after contacts exist; primary forms remain readable and
+usable on common desktop and mobile viewport widths
 
 **Constraints**: Minimal libraries; OpenAPI is source of truth for endpoint
 validation; operators can only access assigned campaigns; external email failures
-must not leak secrets or cause duplicate sends
+must not leak secrets or cause duplicate sends; login must verify stored user
+password hashes; OpenAPI validation helpers must remain small and readable
 
 **Scale/Scope**: Initial internal application for admins, operators, API clients,
 and approved MCP agents; bulk import and scheduled campaigns remain out of scope
@@ -49,21 +51,31 @@ and approved MCP agents; bulk import and scheduled campaigns remain out of scope
 **API Contract**: `contracts/openapi.yaml`; backend compiles request and response
 schemas from OpenAPI with AJV
 
+**Synchronous Boundaries**: Web, API, and MCP contact/campaign CRUD,
+authentication, validation, and read operations use request/response interactions
+because callers need immediate validation, authorization, and saved-record
+feedback. Failures return structured validation, authorization, or safe error
+responses. Campaign sending remains asynchronous through queued send jobs.
+
 **Async Communication**: PostgreSQL-backed send jobs processed by a backend worker
 container; user/API/MCP send requests enqueue work and return status
 
-**External APIs**: EmailLabs template-send API with `Application-Key` and
-`Authorization` keys, recipient variables, request timeout, bounded retries, and
-recorded failure states
+**External APIs**: EmailLabs `POST /api/sendmail_templates` with
+`application/x-www-form-urlencoded` request bodies, Basic authentication from the
+configured application key and secret key, `smtp_account`, `from`, `subject`,
+`template_id` or inline content, `to[email][vars][name]` recipient variables,
+200-recipient request batches, request timeout, bounded retries, provider
+message-id mapping, and recorded failure states
 
 **Container Topology**: Separate backend API, frontend, worker, and PostgreSQL
 containers defined with Dockerfiles and Docker Compose
 
 **Clarifications**: Duplicate contacts use email-only rejection; EmailLabs
-performs placeholder replacement from variables supplied by Vercom; missing
-placeholder data uses fallback variables plus approval; access uses admin and
-operator roles; operators are restricted to assigned campaigns; auth uses
-short-lived bearer access tokens without token revocation
+performs placeholder replacement from form-encoded `sendmail_templates` variables
+supplied by Vercom; missing placeholder data uses fallback variables plus
+approval; access uses admin and operator roles; operators are restricted to
+assigned campaigns; auth uses short-lived bearer access tokens without token
+revocation
 
 ## Constitution Check
 
@@ -133,7 +145,8 @@ frontend/
 │   ├── campaigns/
 │   ├── contacts/
 │   ├── common/
-│   └── layout/
+│   ├── layout/
+│   └── styles/
 └── tests/
     └── unit/
 

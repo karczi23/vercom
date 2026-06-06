@@ -31,10 +31,15 @@ return clear, recoverable feedback for duplicate or incorrect data.
 2. **Given** a human user submits contact details with invalid fields, **When**
    they save the contact, **Then** the system rejects the invalid fields with
    specific correction guidance and does not corrupt existing contacts.
-3. **Given** a human user attempts to create or import a duplicate contact,
-   **When** the duplicate is detected by email address, **Then** the system
-   rejects the duplicate, preserves the existing contact, and explains which
-   contact already uses that email address.
+3. **Given** an operator attempts to create a contact with an email address
+   already saved by the same operator, **When** the duplicate is detected by the
+   operator and email address together, **Then** the system rejects the
+   duplicate, preserves the existing contact, and explains which contact already
+   uses that email address for that operator.
+4. **Given** a different operator has already saved a contact with the same
+   email address, **When** another operator creates their own contact with that
+   email address, **Then** the system accepts the contact as a separate
+   operator-owned record and does not expose the first operator's contact.
 
 ---
 
@@ -112,11 +117,17 @@ web interface, including validation and error cases.
 3. **Given** an operator accesses campaign functionality, **When** they view or
    modify campaigns, **Then** they can only access campaigns assigned to them and
    cannot edit campaigns owned by other operators.
+4. **Given** an operator accesses contact functionality, **When** they view,
+   search, edit, delete, or select recipients, **Then** they can only access
+   contacts they added and cannot see or use contacts added by other operators.
 
 ### Edge Cases
 
 - Duplicate contacts are submitted through different interfaces at nearly the
-  same time.
+  same time by the same operator.
+- Two different operators save contacts with the same email address.
+- An operator attempts to search for, edit, delete, or select another operator's
+  contact.
 - A contact contains malformed or missing email delivery fields.
 - A campaign references unsupported placeholders or placeholders whose variables
   are missing from selected contact data.
@@ -141,14 +152,16 @@ web interface, including validation and error cases.
   specific, recoverable correction guidance for incorrect data. Contact email
   and contact name are required.
 - **FR-005**: The system MUST detect duplicate contacts using the owner-approved
-  duplicate identity rule: email address only. Duplicate contact submissions
-  MUST be rejected without modifying the existing contact.
+  duplicate identity rule: operator plus email address. Duplicate contact
+  submissions by the same operator MUST be rejected without modifying the
+  existing contact, while the same email address MAY exist in separate contacts
+  owned by different operators.
 - **FR-006**: The system MUST allow campaigns to be created, viewed, updated,
   deleted, and listed through the web interface.
 - **FR-007**: The system MUST expose campaign CRUD capabilities through the API
   and MCP server.
 - **FR-008**: The system MUST allow users to select campaign recipients from
-  stored contacts.
+  stored contacts they are authorized to use.
 - **FR-009**: The system MUST support campaign personalization placeholders that
   can be sent to EmailLabs with per-recipient variables.
 - **FR-010**: The system MUST validate campaign placeholders and recipient
@@ -159,31 +172,60 @@ web interface, including validation and error cases.
   are submitted to the external email provider.
 - **FR-012**: The system MUST submit campaign send requests to an external email
   delivery provider and record the result for each campaign send attempt.
-- **FR-013**: The system MUST fail gracefully when the external delivery provider
+- **FR-013**: EmailLabs sends MUST use the documented
+  `POST /api/sendmail_templates` endpoint with `application/x-www-form-urlencoded`
+  request bodies and Basic authentication derived from the configured application
+  key and secret key.
+- **FR-014**: Each EmailLabs send request MUST include `smtp_account`, `subject`,
+  `from`, either `template_id` or inline message content, and recipient entries in
+  the documented `to[email][vars][name]` structure. Optional per-recipient
+  message IDs SHOULD be provided when available for duplicate-send traceability.
+- **FR-015**: Campaign recipients MUST be sent to EmailLabs in batches of no more
+  than 200 recipients per provider request, and each batch MUST stay within the
+  provider POST size and element limits.
+- **FR-016**: Provider response data MUST be mapped back to recipient outcomes
+  using EmailLabs' response mapping from recipient email to provider message ID.
+- **FR-017**: The system MUST fail gracefully when the external delivery provider
   is unavailable, rejects a request, or returns a partial result.
-- **FR-014**: The system MUST prevent unintended duplicate sends when a send
+- **FR-018**: The system MUST prevent unintended duplicate sends when a send
   attempt is retried or its delivery outcome is uncertain.
-- **FR-015**: The system MUST provide a web interface for humans to visually
+- **FR-019**: The system MUST provide a web interface for humans to visually
   manage contacts, campaigns, personalization previews, and send outcomes.
-- **FR-016**: The system MUST expose equivalent core capabilities through the API
+- **FR-020**: The web interface MUST present contact, campaign, authentication,
+  validation, and send forms with modern, consistent styling, responsive layouts,
+  clear labels, readable spacing, visible validation states, and accessible focus
+  states.
+- **FR-021**: The system MUST authenticate users by verifying submitted
+  credentials against stored user records and password hashes. Invalid usernames
+  or passwords MUST be rejected without issuing an access token.
+- **FR-022**: The system MUST expose equivalent core capabilities through the API
   and MCP server, subject to the same validation and authorization rules.
-- **FR-017**: The system MUST restrict access across web, API, and MCP surfaces
+- **FR-023**: The system MUST restrict access across web, API, and MCP surfaces
   using the owner-approved access model: admin and operator roles. Admins can
   manage all contacts, campaigns, settings, and access. Operators can manage
-  contacts and only the campaigns assigned to them; operators MUST NOT edit
-  campaigns assigned to other operators.
-- **FR-018**: Every endpoint MUST validate input and output using rules derived
+  only the contacts they added and only the campaigns assigned to them; operators
+  MUST NOT view, edit, delete, or use contacts added by other operators, and MUST
+  NOT edit campaigns assigned to other operators.
+- **FR-024**: Every endpoint MUST validate input and output using rules derived
   from the OpenAPI specification.
-- **FR-019**: External API failures MUST return a graceful result with actionable
+- **FR-025**: OpenAPI-derived validation MUST remain straightforward to maintain:
+  schema loading, reference resolution, operation lookup, and validator
+  compilation must be separated into small, readable units without unnecessary
+  recursive or ad hoc traversal beyond resolving contract schemas.
+- **FR-026**: External API failures MUST return a graceful result with actionable
   logging and no sensitive data leakage.
-- **FR-020**: API and MCP requests made by operators MUST enforce the same
+- **FR-027**: API and MCP requests made by operators MUST enforce the same
   assigned-campaign restrictions as the web interface.
+- **FR-028**: API and MCP requests made by operators MUST enforce the same
+  operator-owned contact restrictions as the web interface, including recipient
+  selection for campaign sends.
 
 ### Key Entities *(include if feature involves data)*
 
-- **Contact**: A stored recipient record with required email and name,
-  optional personalization variables for EmailLabs placeholders, status,
-  validation state, and duplicate-resolution history.
+- **Contact**: A stored recipient record with required email and name, owning
+  operator, optional personalization variables for EmailLabs placeholders,
+  status, and validation state. Contacts are unique by owning operator and email
+  address.
 - **Campaign**: A mailing campaign with name, subject, one template content body,
   personalization placeholders, selected recipients, assigned operator ownership,
   lifecycle state, and send history.
@@ -205,8 +247,9 @@ web interface, including validation and error cases.
   2 minutes during usability testing.
 - **SC-002**: At least 95% of invalid contact submissions return field-specific
   correction guidance without saving invalid data.
-- **SC-003**: Duplicate contact attempts are detected and routed through the
-  approved resolution behavior with no loss of the existing contact record.
+- **SC-003**: Duplicate contact attempts by the same operator are rejected with
+  no loss of the existing contact record, while the same email address can be
+  saved separately by different operators.
 - **SC-004**: Human users can create a personalized campaign, select recipients,
   validate required variables for at least three recipients, and initiate sending
   in under 10 minutes after contacts already exist.
@@ -214,13 +257,25 @@ web interface, including validation and error cases.
   workflows with the same validation outcomes as the web interface.
 - **SC-006**: External delivery provider failures produce a visible campaign
   status and recovery guidance for 100% of tested failure scenarios.
-- **SC-007**: Operator access tests confirm that operators cannot view, edit, or
-  send campaigns assigned to other operators across web, API, and MCP surfaces.
+- **SC-007**: Campaigns with more than 200 recipients are split into multiple
+  EmailLabs send requests, and no request contains more than 200 recipients.
+- **SC-008**: EmailLabs provider responses map provider message IDs back to
+  recipient outcomes for 100% of accepted recipients in tested send batches.
+- **SC-009**: Operator access tests confirm that operators cannot view, edit,
+  delete, select, or send to contacts added by other operators, and cannot view,
+  edit, or send campaigns assigned to other operators across web, API, and MCP
+  surfaces.
+- **SC-010**: In viewport checks for common desktop and mobile widths, all primary
+  forms remain readable and usable without overlapping controls or clipped text.
+- **SC-011**: Login attempts with incorrect usernames or passwords fail in 100%
+  of tested cases and never return an access token.
 
 ## Assumptions
 
 - The application is for internal campaign operators and approved automation
   clients, not public self-service signup.
+- Contacts are owned by the operator who added them; admin users may manage all
+  contacts as part of the approved internal access model.
 - Sending emails directly is out of scope; the system submits requests to an
   external delivery provider and tracks outcomes.
 - Bulk contact import is not part of the initial scope unless explicitly added
@@ -243,8 +298,8 @@ web interface, including validation and error cases.
   endpoint validation must be derived from the OpenAPI contract.
 - **Data/Security**: Contact and campaign data include personally identifying
   delivery information and campaign content. Admins can manage all records;
-  operators can manage contacts and only their assigned campaigns across web,
-  API, and MCP surfaces.
+  operators can manage only contacts they added and only their assigned campaigns
+  across web, API, and MCP surfaces.
 - **Async Communication**: Campaign sending and external delivery provider
   interaction must be handled asynchronously from user and agent requests, with
   status visible after submission.

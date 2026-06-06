@@ -47,7 +47,8 @@ access scope.
 one campaign body format in the application model. Unsupported placeholders are
 rejected. Missing placeholder values use fallback variables and require variable
 validation approval before send. Vercom does not store per-recipient rendered
-bodies by default; EmailLabs performs final placeholder replacement.
+bodies by default; EmailLabs performs final placeholder replacement from
+form-encoded `to[email][vars]` fields.
 
 **States**: `draft` -> `ready` -> `sending` -> `sent` or `failed`. Drafts can be
 edited; sending and sent campaigns are immutable except status/outcome fields.
@@ -83,4 +84,5 @@ be retried until the configured retry limit is reached.
 `providerStatusCode`, `providerResponseSummary`, `failureReason`, `createdAt`.
 
 **Validation**: Provider secrets are never stored. Response summaries exclude
-sensitive headers, keys, and message payload secrets.
+sensitive headers, keys, and message payload secrets. Provider message IDs
+returned by EmailLabs are mapped back to recipient outcomes when available.

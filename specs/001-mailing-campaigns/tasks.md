@@ -55,11 +55,17 @@ baseline commands used by every story.
 - [X] T028 [P] Add unit tests for password hashing and token verification in `backend/tests/unit/auth.test.ts`
 - [X] T029 Implement authentication middleware in `backend/src/auth/authMiddleware.ts`
 - [X] T030 Implement role and assigned-campaign authorization helpers in `backend/src/auth/authorization.ts`
+- [X] T031 Implement stored-user credential lookup and password verification for login in `backend/src/auth/authService.ts`
+- [X] T032 [P] Add unit tests for valid and invalid login credentials in `backend/tests/unit/auth.test.ts`
 - [X] T033 Implement frontend API client with bearer token support in `frontend/src/api/client.ts`
 - [X] T034 Implement frontend auth state handling in `frontend/src/auth/authStore.ts`
 - [X] T035 Implement backend startup entrypoint in `backend/src/api/server.ts`
 - [X] T036 Implement worker startup entrypoint in `backend/src/worker/worker.ts`
 - [X] T037 Implement MCP server startup entrypoint in `backend/src/mcp/server.ts`
+- [X] T107 Simplify OpenAPI validator helpers while preserving contract-derived request and response validation in `backend/src/api/openapi-validation/openapiValidator.ts`
+- [X] T108 [P] Configure Tailwind CSS for the Vite frontend in `frontend/package.json`, `frontend/vite.config.ts`, and `frontend/src/styles/app.css`
+- [X] T109 Apply modern Tailwind styling to the app shell, authentication, contact, campaign, recipient, validation, and send status form surfaces in `frontend/src`
+- [X] T110 [P] Add frontend unit coverage for login controls and styled form validation states in `frontend/tests/unit`
 
 **Checkpoint**: Foundation ready. User story implementation can now proceed.
 
@@ -160,8 +166,10 @@ outcomes, send attempts, and recovery guidance.
 
 ### Implementation for User Story 3
 
-- [X] T077 [P] [US3] Implement EmailLabs client with JSON API keys, timeouts, bounded retries, and redacted logging in `backend/src/email-labs/emailLabsClient.ts`
-- [X] T078 [P] [US3] Implement provider request mapping with recipient variables and untouched placeholders in `backend/src/email-labs/emailLabsMapper.ts`
+- [ ] T077 [P] [US3] Implement EmailLabs client for `POST /api/sendmail_templates` with form-url-encoded bodies, Basic auth, timeouts, bounded retries, and redacted logging in `backend/src/email-labs/emailLabsClient.ts`
+- [ ] T078 [P] [US3] Implement provider request mapping to `smtp_account`, `from`, `subject`, `template_id` or inline content, `to[email][vars][name]`, optional `message_id`, and untouched placeholders in `backend/src/email-labs/emailLabsMapper.ts`
+- [ ] T111 [P] [US3] Add unit tests for EmailLabs 200-recipient batching and form-url-encoded `to[email][vars]` payloads in `backend/tests/unit/email-labs/emailLabsClient.test.ts`
+- [ ] T112 [US3] Map EmailLabs response recipient email/provider message IDs back to recipient send outcomes in `backend/src/worker/sendWorkerService.ts`
 - [X] T079 [US3] Implement send job repository with Drizzle ORM only in `backend/src/worker/sendJobRepository.ts`
 - [X] T080 [US3] Implement send attempt repository with Drizzle ORM only in `backend/src/worker/sendAttemptRepository.ts`
 - [X] T081 [US3] Implement send queue service that enqueues work asynchronously in `backend/src/worker/sendQueueService.ts`

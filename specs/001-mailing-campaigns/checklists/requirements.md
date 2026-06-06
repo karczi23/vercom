@@ -32,7 +32,11 @@
 ## Notes
 
 - Clarifications resolved on 2026-06-04:
-  - Duplicate contacts are identified by email address only and rejected.
+  - Duplicate contacts are identified by operator plus email address and rejected
+    only when the same operator already owns a contact with that email address.
   - Missing personalization data uses fallback variables with approval before send.
   - Access uses admin and operator roles; operators are restricted to assigned campaigns.
+- Requirement updated on 2026-06-07:
+  - Operators can view, manage, and use only contacts they added; the same email
+    address may exist in contacts owned by different operators.
 - Specification is ready for `/speckit-plan`.
