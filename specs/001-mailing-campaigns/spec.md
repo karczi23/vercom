@@ -139,7 +139,8 @@ web interface, including validation and error cases.
 - **FR-003**: The system MUST expose contact CRUD capabilities through an MCP
   server for AI agents.
 - **FR-004**: The system MUST validate contact data before saving and return
-  specific, recoverable correction guidance for incorrect data.
+  specific, recoverable correction guidance for incorrect data. Contact email
+  and contact name are required.
 - **FR-005**: The system MUST detect duplicate contacts using the owner-approved
   duplicate identity rule: email address only. Duplicate contact submissions
   MUST be rejected without modifying the existing contact.
@@ -183,12 +184,12 @@ web interface, including validation and error cases.
 
 ### Key Entities *(include if feature involves data)*
 
-- **Contact**: A stored recipient record with delivery information,
-  personalization fields, status, validation state, and duplicate-resolution
-  history.
-- **Campaign**: A mailing campaign with name, content, personalization
-  placeholders, selected recipients, assigned operator ownership, lifecycle
-  state, and send history.
+- **Contact**: A stored recipient record with required email and name,
+  optional personalization variables for EmailLabs placeholders, status,
+  validation state, and duplicate-resolution history.
+- **Campaign**: A mailing campaign with name, subject, one template content body,
+  personalization placeholders, selected recipients, assigned operator ownership,
+  lifecycle state, and send history.
 - **Campaign Recipient**: The relationship between a campaign and a contact,
   including variable validation status and per-recipient delivery outcome.
 - **Send Attempt**: A record of a campaign submission to the external delivery

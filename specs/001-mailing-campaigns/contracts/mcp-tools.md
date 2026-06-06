@@ -11,7 +11,7 @@ Output: paginated contacts with `id`, `email`, `name`, and validation status.
 
 ## contacts.create
 
-Input: `email`, optional `name`, optional `personalizationData`.
+Input: `email`, `name`, optional `personalizationData`.
 
 Output: created contact or validation error. Duplicate email returns a duplicate
 error and does not modify the existing contact.

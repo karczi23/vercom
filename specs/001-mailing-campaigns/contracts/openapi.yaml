@@ -289,15 +289,17 @@ components:
           type: integer
     ContactInput:
       type: object
-      required: [email]
+      required: [email, name]
       properties:
         email:
           type: string
           format: email
         name:
           type: string
+          minLength: 1
         personalizationData:
           type: object
+          description: Optional EmailLabs template variables beyond required contact fields.
           additionalProperties:
             type: string
     Contact:
@@ -346,14 +348,12 @@ components:
       allOf:
         - $ref: '#/components/schemas/CampaignInput'
         - type: object
-          required: [id, status, previewApproved]
+          required: [id, status]
           properties:
             id:
               type: string
             status:
               $ref: '#/components/schemas/CampaignStatus'
-            previewApproved:
-              type: boolean
     CampaignListResponse:
       type: object
       required: [items]

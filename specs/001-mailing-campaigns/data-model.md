@@ -14,29 +14,40 @@ records.
 
 ## Contact
 
-**Purpose**: Stores recipient delivery and personalization data.
+**Purpose**: Stores recipient delivery data and variables used for provider-side
+placeholder replacement.
 
 **Fields**: `id`, `email`, `name`, `personalizationData`, `validationStatus`,
 `createdAt`, `updatedAt`.
 
-**Validation**: `email` is required, valid, normalized to lowercase, and unique.
-Duplicate email submissions are rejected without modifying the existing contact.
+**Validation**: `email` and `name` are required. `email` must be valid,
+normalized to lowercase, and unique. Duplicate email submissions are rejected
+without modifying the existing contact.
+
+**Personalization Data**: `personalizationData` contains optional key-value
+variables passed to EmailLabs for placeholders beyond the required contact
+fields. For example, a contact named "Anna Kowalska" may have
+`personalizationData` values such as `company: "ACME"` or `plan: "Premium"` so a
+campaign can use `{{ company }}` or `{{ plan }}`. Required built-in variables
+such as contact name and email come from first-class contact fields, not from
+`personalizationData`.
 
 **Relationships**: Contacts can belong to many campaign recipient rows.
 
 ## Campaign
 
-**Purpose**: Stores campaign content, personalization settings, and access scope.
+**Purpose**: Stores one campaign template body, personalization settings, and
+access scope.
 
 **Fields**: `id`, `name`, `subject`, `templateContent`, `fallbackVariables`,
-`emailLabsTemplateId`, `status`, `assignedOperatorId`, `variablesApprovedAt`,
-`createdByUserId`, `createdAt`, `updatedAt`.
+`emailLabsTemplateId`, `status`, `assignedOperatorId`, `createdByUserId`,
+`createdAt`, `updatedAt`.
 
-**Validation**: `name`, `subject`, and at least one body format are required.
-Unsupported placeholders are rejected. Missing placeholder values use fallback
-variables and require variable validation approval before send. Vercom does not
-store per-recipient rendered bodies by default; EmailLabs performs final
-placeholder replacement.
+**Validation**: `name`, `subject`, and `templateContent` are required. There is
+one campaign body format in the application model. Unsupported placeholders are
+rejected. Missing placeholder values use fallback variables and require variable
+validation approval before send. Vercom does not store per-recipient rendered
+bodies by default; EmailLabs performs final placeholder replacement.
 
 **States**: `draft` -> `ready` -> `sending` -> `sent` or `failed`. Drafts can be
 edited; sending and sent campaigns are immutable except status/outcome fields.
