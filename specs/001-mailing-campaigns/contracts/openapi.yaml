@@ -178,9 +178,9 @@ paths:
       responses:
         '200':
           description: Updated recipient selection
-  /campaigns/{campaignId}/preview:
+  /campaigns/{campaignId}/validate-variables:
     post:
-      summary: Render and approve campaign preview
+      summary: Validate campaign variables and approve send readiness
       parameters:
         - $ref: '#/components/parameters/CampaignId'
       requestBody:
@@ -188,14 +188,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PreviewRequest'
+              $ref: '#/components/schemas/VariableValidationRequest'
       responses:
         '200':
-          description: Preview result
+          description: Variable validation result
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PreviewResponse'
+                $ref: '#/components/schemas/VariableValidationResponse'
   /campaigns/{campaignId}/send:
     post:
       summary: Queue campaign send
@@ -324,7 +324,7 @@ components:
       enum: [draft, ready, sending, sent, failed]
     CampaignInput:
       type: object
-      required: [name, subject, fallbackText, assignedOperatorId]
+      required: [name, subject, templateContent, fallbackVariables, assignedOperatorId]
       properties:
         name:
           type: string
@@ -332,12 +332,14 @@ components:
         subject:
           type: string
           minLength: 1
-        bodyText:
+        templateContent:
           type: string
-        bodyHtml:
+        emailLabsTemplateId:
           type: string
-        fallbackText:
-          type: string
+        fallbackVariables:
+          type: object
+          additionalProperties:
+            type: string
         assignedOperatorId:
           type: string
     Campaign:
@@ -369,13 +371,13 @@ components:
           items:
             type: string
           uniqueItems: true
-    PreviewRequest:
+    VariableValidationRequest:
       type: object
       required: [approve]
       properties:
         approve:
           type: boolean
-    PreviewResponse:
+    VariableValidationResponse:
       type: object
       required: [items, approved]
       properties:
@@ -385,16 +387,14 @@ components:
           type: array
           items:
             type: object
-            required: [contactId, subject, fallbackUsed]
+            required: [contactId, fallbackUsed, missingVariables]
             properties:
               contactId:
                 type: string
-              subject:
-                type: string
-              bodyText:
-                type: string
-              bodyHtml:
-                type: string
+              missingVariables:
+                type: array
+                items:
+                  type: string
               fallbackUsed:
                 type: boolean
     SendJob:

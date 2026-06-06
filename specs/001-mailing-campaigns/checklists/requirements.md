@@ -33,6 +33,6 @@
 
 - Clarifications resolved on 2026-06-04:
   - Duplicate contacts are identified by email address only and rejected.
-  - Missing personalization data uses fallback text with preview approval before send.
+  - Missing personalization data uses fallback variables with approval before send.
   - Access uses admin and operator roles; operators are restricted to assigned campaigns.
 - Specification is ready for `/speckit-plan`.

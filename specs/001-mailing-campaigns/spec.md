@@ -41,25 +41,25 @@ return clear, recoverable feedback for duplicate or incorrect data.
 ### User Story 2 - Create and Personalize Campaigns (Priority: P2)
 
 A human user creates a mailing campaign, selects recipients, writes campaign
-content, and personalizes the message with placeholders such as `{Name}` before
-sending.
+content, and defines EmailLabs-compatible placeholders before sending.
 
 **Why this priority**: The application's core business value is preparing
 targeted mailing campaigns that can use stored contact data.
 
 **Independent Test**: Create a campaign, select contacts, insert placeholders,
-preview personalized output for multiple contacts, and verify that missing or
-invalid personalization data is handled with owner-approved behavior.
+verify required recipient variables before send, and confirm missing or invalid
+personalization data is handled with owner-approved behavior before EmailLabs
+receives the send request.
 
 **Acceptance Scenarios**:
 
 1. **Given** contacts exist with personalization fields, **When** a user creates
-   a campaign using a supported placeholder, **Then** the preview shows each
-   recipient's personalized message.
+   a campaign using a supported placeholder, **Then** the system confirms the
+   placeholder can be supplied to EmailLabs for each selected recipient.
 2. **Given** a selected contact lacks data required by a placeholder, **When**
-   the user previews the campaign, **Then** the system applies configured
-   fallback text, highlights affected recipients, and requires preview approval
-   before sending.
+   the user validates the campaign before sending, **Then** the system applies
+   configured fallback variables, highlights affected recipients, and requires
+   approval before EmailLabs receives the send request.
 3. **Given** campaign content contains an unsupported placeholder, **When** the
    user saves or previews the campaign, **Then** the system identifies the
    unsupported placeholder and explains how to correct it.
@@ -118,8 +118,8 @@ web interface, including validation and error cases.
 - Duplicate contacts are submitted through different interfaces at nearly the
   same time.
 - A contact contains malformed or missing email delivery fields.
-- A campaign references unsupported placeholders or placeholders with missing
-  contact data.
+- A campaign references unsupported placeholders or placeholders whose variables
+  are missing from selected contact data.
 - A contact is deleted after being selected for a campaign but before sending.
 - The external email delivery provider times out, rejects a recipient, or returns
   a partial failure.
@@ -149,13 +149,14 @@ web interface, including validation and error cases.
   and MCP server.
 - **FR-008**: The system MUST allow users to select campaign recipients from
   stored contacts.
-- **FR-009**: The system MUST support campaign personalization placeholders such
-  as `{Name}` using fields from selected contacts.
-- **FR-010**: The system MUST preview personalized campaign content before send.
+- **FR-009**: The system MUST support campaign personalization placeholders that
+  can be sent to EmailLabs with per-recipient variables.
+- **FR-010**: The system MUST validate campaign placeholders and recipient
+  variables before send without replacing placeholders itself.
 - **FR-011**: The system MUST handle missing personalization data according to
-  the owner-approved campaign safety policy: allow configured fallback text,
-  show affected recipients in preview, and require preview approval before any
-  messages are submitted to the external email provider.
+  the owner-approved campaign safety policy: allow configured fallback variables,
+  show affected recipients before send, and require approval before any messages
+  are submitted to the external email provider.
 - **FR-012**: The system MUST submit campaign send requests to an external email
   delivery provider and record the result for each campaign send attempt.
 - **FR-013**: The system MUST fail gracefully when the external delivery provider
@@ -189,7 +190,7 @@ web interface, including validation and error cases.
   placeholders, selected recipients, assigned operator ownership, lifecycle
   state, and send history.
 - **Campaign Recipient**: The relationship between a campaign and a contact,
-  including personalized rendering status and per-recipient delivery outcome.
+  including variable validation status and per-recipient delivery outcome.
 - **Send Attempt**: A record of a campaign submission to the external delivery
   provider, including status, timestamps, failures, retry state, and provider
   response summary.
@@ -209,8 +210,8 @@ web interface, including validation and error cases.
 - **SC-003**: Duplicate contact attempts are detected and routed through the
   approved resolution behavior with no loss of the existing contact record.
 - **SC-004**: Human users can create a personalized campaign, select recipients,
-  preview at least three personalized messages, and initiate sending in under
-  10 minutes after contacts already exist.
+  validate required variables for at least three recipients, and initiate sending
+  in under 10 minutes after contacts already exist.
 - **SC-005**: API and MCP clients can complete the primary contact and campaign
   workflows with the same validation outcomes as the web interface.
 - **SC-006**: External delivery provider failures produce a visible campaign
@@ -242,8 +243,8 @@ web interface, including validation and error cases.
   duplicate detection, personalization, sending, and interface operations require
   automated coverage or documented manual validation.
 - **OpenAPI/Validation**: API capabilities include contacts, campaigns,
-  personalization previews, send requests, and send-status retrieval; endpoint
-  validation must be derived from the OpenAPI contract.
+  placeholder-variable validation, send requests, and send-status retrieval;
+  endpoint validation must be derived from the OpenAPI contract.
 - **Data/Security**: Contact and campaign data include personally identifying
   delivery information and campaign content. Admins can manage all records;
   operators can manage contacts and only their assigned campaigns across web,

@@ -40,10 +40,11 @@ Expected services:
 4. Attempt to create the same email again and confirm duplicate rejection.
 5. Create a campaign assigned to operator A.
 6. Add the contact as a recipient.
-7. Add `{Name}` placeholder and fallback text.
-8. Preview the campaign and approve the preview.
+7. Add a provider-compatible placeholder and fallback variables.
+8. Validate recipient variables and approve send readiness.
 9. Trigger send and confirm a send job is queued.
-10. Confirm worker records EmailLabs success or graceful failure.
+10. Confirm worker submits template variables to EmailLabs and records success
+    or graceful failure.
 11. Log in as operator B and confirm operator B cannot view, edit, or send
     operator A's campaign.
 12. Repeat contact and campaign reads through the API and MCP tools.

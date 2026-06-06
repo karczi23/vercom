@@ -36,7 +36,7 @@ Output: admins see all campaigns; operators see only assigned campaigns.
 
 ## campaigns.create
 
-Input: `name`, `subject`, body content, fallback text, assigned operator.
+Input: `name`, `subject`, template content, fallback variables, assigned operator.
 
 Output: created draft campaign or validation error.
 
@@ -47,18 +47,20 @@ Input: `id`, editable campaign fields.
 Output: updated campaign or validation/authorization error. Operators can only
 update assigned draft campaigns.
 
-## campaigns.preview
+## campaigns.validateVariables
 
 Input: `id`, selected contact IDs.
 
-Output: personalized preview entries, fallback usage, missing data warnings, and
-approval requirement.
+Output: variable validation entries, fallback usage, missing data warnings, and
+send-readiness approval requirement. EmailLabs performs final placeholder
+replacement when sent.
 
 ## campaigns.send
 
 Input: `id`.
 
-Output: queued send job and current campaign status. Requires preview approval.
+Output: queued send job and current campaign status. Requires variable validation
+approval.
 
 ## campaigns.sendStatus
 

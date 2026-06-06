@@ -28,26 +28,31 @@ Duplicate email submissions are rejected without modifying the existing contact.
 
 **Purpose**: Stores campaign content, personalization settings, and access scope.
 
-**Fields**: `id`, `name`, `subject`, `bodyText`, `bodyHtml`, `fallbackText`,
-`status`, `assignedOperatorId`, `previewApprovedAt`, `createdByUserId`,
-`createdAt`, `updatedAt`.
+**Fields**: `id`, `name`, `subject`, `templateContent`, `fallbackVariables`,
+`emailLabsTemplateId`, `status`, `assignedOperatorId`, `variablesApprovedAt`,
+`createdByUserId`, `createdAt`, `updatedAt`.
 
 **Validation**: `name`, `subject`, and at least one body format are required.
 Unsupported placeholders are rejected. Missing placeholder values use fallback
-text and require preview approval before send.
+variables and require variable validation approval before send. Vercom does not
+store per-recipient rendered bodies by default; EmailLabs performs final
+placeholder replacement.
 
 **States**: `draft` -> `ready` -> `sending` -> `sent` or `failed`. Drafts can be
 edited; sending and sent campaigns are immutable except status/outcome fields.
 
 ## CampaignRecipient
 
-**Purpose**: Links campaigns to contacts and stores personalized render status.
+**Purpose**: Links campaigns to contacts and stores variable validation and send
+state.
 
-**Fields**: `id`, `campaignId`, `contactId`, `renderedSubject`, `renderedBodyText`,
-`renderedBodyHtml`, `personalizationStatus`, `createdAt`, `updatedAt`.
+**Fields**: `id`, `campaignId`, `contactId`, `variableStatus`,
+`missingVariables`, `fallbackVariablesUsed`, `sendStatus`, `providerMessageId`,
+`createdAt`, `updatedAt`.
 
 **Validation**: A campaign-contact pair is unique. Rendering records missing data
-and fallback usage.
+and fallback usage are validation metadata only; full rendered message bodies are
+not duplicated into this table.
 
 ## SendJob
 

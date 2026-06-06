@@ -61,11 +61,17 @@ portable with Docker Compose.
 
 **Rationale**: Current EmailLabs documentation describes a modern REST API using
 JSON, OpenAPI 3.0.2 documentation, and `Application-Key` plus `Authorization`
-keys. This aligns with the project's OpenAPI and JSON API direction.
+keys. EmailLabs template sending accepts recipients and corresponding variables,
+then performs template substitution and sends personalized messages. This reduces
+Vercom responsibility for final placeholder rendering while keeping Vercom
+responsible for validating variables, approval, send state, and duplicate-send
+safety.
 
 **Alternatives considered**: The older `api/new_sendmail` form-encoded endpoint
 with Basic auth was rejected because it conflicts with the modern JSON API
-direction and would need different validation/mapping.
+direction and would need different validation/mapping. Vercom-side placeholder
+rendering was rejected because provider-side template rendering creates less
+application responsibility and matches EmailLabs template-send capabilities.
 
 **Sources**:
 - https://newpanel.docs.emaillabs.io/en/integrations/api

@@ -9,8 +9,11 @@
 Build a TypeScript mailing campaign application with an Express backend, React
 frontend, PostgreSQL storage through Drizzle ORM, OpenAPI-derived validation,
 MCP tools for agents, and asynchronous campaign sending through EmailLabs. The
-plan stores contacts, campaigns, assigned operator access, previews, send jobs,
-send attempts, and external-provider outcomes while keeping dependencies minimal.
+plan stores contacts, campaigns, assigned operator access, variable validation
+state, send jobs, send attempts, and external-provider outcomes while keeping
+dependencies minimal.
+EmailLabs is responsible for placeholder substitution during template sending;
+Vercom validates required variables and duplicate-send safety before submission.
 
 ## Technical Context
 
@@ -51,15 +54,16 @@ requests
 **Async Communication**: PostgreSQL-backed send jobs processed by a backend worker
 container; user/API/MCP send requests enqueue work and return status
 
-**External APIs**: EmailLabs modern JSON REST API with `Application-Key` and
-`Authorization` keys, request timeout, bounded retries, and recorded failure
-states
+**External APIs**: EmailLabs template-send API with `Application-Key` and
+`Authorization` keys, recipient variables, request timeout, bounded retries, and
+recorded failure states
 
 **Container Topology**: Separate backend API, frontend, worker, and PostgreSQL
 containers defined with Dockerfiles and Docker Compose
 
-**Clarifications**: Duplicate contacts use email-only rejection; missing
-placeholder data uses fallback text plus preview approval; access uses admin and
+**Clarifications**: Duplicate contacts use email-only rejection; EmailLabs
+performs placeholder replacement from variables supplied by Vercom; missing
+placeholder data uses fallback variables plus approval; access uses admin and
 operator roles; operators are restricted to assigned campaigns; auth uses
 short-lived bearer access tokens without token revocation
 
