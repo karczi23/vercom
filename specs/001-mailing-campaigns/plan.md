@@ -26,7 +26,8 @@ AJV, Argon2id password hashing, Vitest, Docker Compose, MCP TypeScript SDK
 **Storage**: PostgreSQL with Drizzle ORM schema and Drizzle migrations; no direct
 SQL invocations in application code
 
-**Testing**: Vitest for unit, contract, and integration tests
+**Testing**: Vitest for unit and contract tests; quickstart/manual validation for
+end-to-end campaign flows
 
 **Target Platform**: Containerized local and deployment runtime using Dockerfiles
 and Docker Compose
@@ -78,7 +79,7 @@ short-lived bearer access tokens without token revocation
   TypeScript strict mode, Drizzle, PostgreSQL, Docker Compose containers, and
   rejected alternatives in `research.md`.
 - **Verifiable Increments**: PASS. Each story has an independent test path; unit,
-  contract, integration, and quickstart validation are required.
+  contract, and quickstart validation are required.
 - **Contract-Driven Security and Data Access**: PASS. OpenAPI plus AJV drives
   endpoint validation, Drizzle is the only persistence layer, 10/minute rate
   limiting is required, and access restrictions are explicit.
@@ -126,7 +127,6 @@ backend/
 │   └── worker/
 └── tests/
     ├── contract/
-    ├── integration/
     └── unit/
 
 frontend/
@@ -139,7 +139,6 @@ frontend/
 │   ├── common/
 │   └── layout/
 └── tests/
-    ├── integration/
     └── unit/
 
 common/

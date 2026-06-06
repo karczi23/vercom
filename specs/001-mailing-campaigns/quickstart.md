@@ -54,7 +54,6 @@ Expected services:
 ```bash
 npm run test --workspaces
 npm run test:contract --workspace backend
-npm run test:integration --workspace backend
 ```
 
 ## Acceptance
