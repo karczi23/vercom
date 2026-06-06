@@ -14,7 +14,8 @@
 
 An operator creates or edits a campaign in a CMS-like screen by entering a topic,
 writing email content, applying supported formatting from toolbar buttons, and
-using placeholders such as `{{ Name }}`.
+using placeholders such as `{{ Name }}` that EmailLabs will replace during
+sending.
 
 **Why this priority**: Operators need a safe, visual campaign authoring workflow
 before campaign previews or sending can be trusted.
@@ -33,8 +34,9 @@ preserved without accepting raw HTML.
    italic, heading, or font toolbar controls, **Then** the selected text displays
    the chosen formatting in the editor and preview.
 3. **Given** an operator inserts a placeholder using the `{{ placeholder }}`
-   syntax, **When** the campaign is previewed, **Then** the placeholder is
-   recognized as a personalization token instead of ordinary text.
+   syntax, **When** the campaign is validated before send, **Then** the
+   placeholder is recognized as an EmailLabs variable token instead of ordinary
+   text.
 
 ---
 
@@ -113,7 +115,8 @@ same campaign, while unsent or failed recipients remain visible for safe recover
 - **FR-003**: The campaign editor MUST allow operators to write campaign email
   content in a textarea-like editing area.
 - **FR-004**: The campaign editor MUST support personalization placeholders only
-  in the `{{ placeholder }}` format.
+  in the `{{ placeholder }}` format and MUST preserve those placeholders for
+  EmailLabs to replace during sending.
 - **FR-005**: The system MUST reject or flag unsupported placeholder formats with
   clear correction guidance.
 - **FR-006**: The editor toolbar MUST provide buttons for bold and italic
@@ -127,8 +130,9 @@ same campaign, while unsent or failed recipients remain visible for safe recover
 - **FR-010**: The system MUST forbid direct HTML authoring in campaign content.
 - **FR-011**: Any HTML elements typed or pasted into campaign content MUST be
   treated as sanitized plain text and MUST NOT be interpreted as markup.
-- **FR-012**: The campaign preview MUST show the same supported formatting and
-  placeholder interpretation that will be used for sending.
+- **FR-012**: The campaign preview MUST show supported formatting and placeholder
+  positions, while making clear that final placeholder replacement is performed
+  by EmailLabs during sending.
 - **FR-013**: The system MUST track send state per recipient within a campaign.
 - **FR-014**: The system MUST NOT submit an email more than once to the same
   recipient for the same campaign after a successful or uncertain submission.
@@ -145,7 +149,8 @@ same campaign, while unsent or failed recipients remain visible for safe recover
 - **Campaign Draft**: Editable campaign definition containing topic, content,
   supported formatting, placeholders, assigned operator, and draft state.
 - **Editor Content**: Sanitized campaign content with controlled rich-text
-  formatting, placeholder tokens, and direct HTML preserved only as plain text.
+  formatting, EmailLabs placeholder tokens, and direct HTML preserved only as
+  plain text.
 - **Toolbar Formatting**: Supported formatting choices available through editor
   controls: bold, italic, headings 1-6, and predefined font options.
 - **Recipient Send State**: Per-campaign, per-recipient status that prevents
@@ -176,8 +181,8 @@ same campaign, while unsent or failed recipients remain visible for safe recover
 - Supported formatting is limited to toolbar-controlled bold, italic, heading,
   and font selection for this feature.
 - Raw HTML input is not a supported authoring workflow, even for admins.
-- Placeholder values are resolved from contact personalization data defined by
-  the broader mailing campaigns feature.
+- Placeholder values are sent to EmailLabs as recipient variables from contact
+  personalization data defined by the broader mailing campaigns feature.
 
 ## Constitutional Considerations *(mandatory)*
 
@@ -187,8 +192,9 @@ same campaign, while unsent or failed recipients remain visible for safe recover
   and duplicate-send prevention require automated coverage and manual preview
   validation.
 - **OpenAPI/Validation**: Campaign content and send-recovery endpoints must
-  validate supported formatting, placeholder syntax, and recipient send-state
-  transitions through OpenAPI-derived rules.
+  validate supported formatting, EmailLabs placeholder syntax, available
+  recipient variables, and recipient send-state transitions through
+  OpenAPI-derived rules.
 - **Data/Security**: Direct HTML authoring is forbidden; pasted or typed HTML is
   sanitized and treated as plain text. Operator campaign assignment restrictions
   remain mandatory.
