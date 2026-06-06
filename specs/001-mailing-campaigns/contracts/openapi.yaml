@@ -1,0 +1,440 @@
+openapi: 3.0.3
+info:
+  title: Vercom Mailing Campaigns API
+  version: 0.1.0
+servers:
+  - url: /api
+security:
+  - bearerAuth: []
+paths:
+  /auth/login:
+    post:
+      security: []
+      summary: Authenticate with username and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Short-lived bearer access token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /contacts:
+    get:
+      summary: List contacts
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+        - name: query
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Contact list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactListResponse'
+    post:
+      summary: Create contact
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContactInput'
+      responses:
+        '201':
+          description: Created contact
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contact'
+        '409':
+          $ref: '#/components/responses/DuplicateContact'
+  /contacts/{contactId}:
+    get:
+      summary: Get contact
+      parameters:
+        - $ref: '#/components/parameters/ContactId'
+      responses:
+        '200':
+          description: Contact
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contact'
+    patch:
+      summary: Update contact
+      parameters:
+        - $ref: '#/components/parameters/ContactId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContactInput'
+      responses:
+        '200':
+          description: Updated contact
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contact'
+    delete:
+      summary: Delete contact
+      parameters:
+        - $ref: '#/components/parameters/ContactId'
+      responses:
+        '204':
+          description: Deleted
+  /campaigns:
+    get:
+      summary: List campaigns
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+        - name: status
+          in: query
+          schema:
+            $ref: '#/components/schemas/CampaignStatus'
+      responses:
+        '200':
+          description: Campaign list scoped by caller permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignListResponse'
+    post:
+      summary: Create campaign
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CampaignInput'
+      responses:
+        '201':
+          description: Created campaign
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Campaign'
+  /campaigns/{campaignId}:
+    get:
+      summary: Get campaign
+      parameters:
+        - $ref: '#/components/parameters/CampaignId'
+      responses:
+        '200':
+          description: Campaign
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Campaign'
+    patch:
+      summary: Update draft campaign
+      parameters:
+        - $ref: '#/components/parameters/CampaignId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CampaignInput'
+      responses:
+        '200':
+          description: Updated campaign
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Campaign'
+    delete:
+      summary: Delete draft campaign
+      parameters:
+        - $ref: '#/components/parameters/CampaignId'
+      responses:
+        '204':
+          description: Deleted
+  /campaigns/{campaignId}/recipients:
+    post:
+      summary: Replace campaign recipients
+      parameters:
+        - $ref: '#/components/parameters/CampaignId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecipientsInput'
+      responses:
+        '200':
+          description: Updated recipient selection
+  /campaigns/{campaignId}/preview:
+    post:
+      summary: Render and approve campaign preview
+      parameters:
+        - $ref: '#/components/parameters/CampaignId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PreviewRequest'
+      responses:
+        '200':
+          description: Preview result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PreviewResponse'
+  /campaigns/{campaignId}/send:
+    post:
+      summary: Queue campaign send
+      parameters:
+        - $ref: '#/components/parameters/CampaignId'
+      responses:
+        '202':
+          description: Send job queued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SendJob'
+  /campaigns/{campaignId}/send-attempts:
+    get:
+      summary: List campaign send attempts
+      parameters:
+        - $ref: '#/components/parameters/CampaignId'
+      responses:
+        '200':
+          description: Send attempts
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SendAttempt'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  parameters:
+    ContactId:
+      name: contactId
+      in: path
+      required: true
+      schema:
+        type: string
+    CampaignId:
+      name: campaignId
+      in: path
+      required: true
+      schema:
+        type: string
+    Limit:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 25
+    Offset:
+      name: offset
+      in: query
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+  responses:
+    Unauthorized:
+      description: Missing or invalid bearer token
+    DuplicateContact:
+      description: Contact email already exists
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  schemas:
+    LoginRequest:
+      type: object
+      required: [username, password]
+      properties:
+        username:
+          type: string
+          minLength: 1
+        password:
+          type: string
+          minLength: 1
+    LoginResponse:
+      type: object
+      required: [accessToken, expiresInSeconds]
+      properties:
+        accessToken:
+          type: string
+        expiresInSeconds:
+          type: integer
+    ContactInput:
+      type: object
+      required: [email]
+      properties:
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        personalizationData:
+          type: object
+          additionalProperties:
+            type: string
+    Contact:
+      allOf:
+        - $ref: '#/components/schemas/ContactInput'
+        - type: object
+          required: [id, validationStatus]
+          properties:
+            id:
+              type: string
+            validationStatus:
+              type: string
+              enum: [valid, invalid]
+    ContactListResponse:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Contact'
+    CampaignStatus:
+      type: string
+      enum: [draft, ready, sending, sent, failed]
+    CampaignInput:
+      type: object
+      required: [name, subject, fallbackText, assignedOperatorId]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        subject:
+          type: string
+          minLength: 1
+        bodyText:
+          type: string
+        bodyHtml:
+          type: string
+        fallbackText:
+          type: string
+        assignedOperatorId:
+          type: string
+    Campaign:
+      allOf:
+        - $ref: '#/components/schemas/CampaignInput'
+        - type: object
+          required: [id, status, previewApproved]
+          properties:
+            id:
+              type: string
+            status:
+              $ref: '#/components/schemas/CampaignStatus'
+            previewApproved:
+              type: boolean
+    CampaignListResponse:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Campaign'
+    RecipientsInput:
+      type: object
+      required: [contactIds]
+      properties:
+        contactIds:
+          type: array
+          items:
+            type: string
+          uniqueItems: true
+    PreviewRequest:
+      type: object
+      required: [approve]
+      properties:
+        approve:
+          type: boolean
+    PreviewResponse:
+      type: object
+      required: [items, approved]
+      properties:
+        approved:
+          type: boolean
+        items:
+          type: array
+          items:
+            type: object
+            required: [contactId, subject, fallbackUsed]
+            properties:
+              contactId:
+                type: string
+              subject:
+                type: string
+              bodyText:
+                type: string
+              bodyHtml:
+                type: string
+              fallbackUsed:
+                type: boolean
+    SendJob:
+      type: object
+      required: [id, campaignId, status]
+      properties:
+        id:
+          type: string
+        campaignId:
+          type: string
+        status:
+          type: string
+          enum: [pending, processing, completed, failed]
+    SendAttempt:
+      type: object
+      required: [id, campaignId, status, createdAt]
+      properties:
+        id:
+          type: string
+        campaignId:
+          type: string
+        status:
+          type: string
+          enum: [queued, submitted, rejected, timeout, partial_failure, failed]
+        providerRequestId:
+          type: string
+        failureReason:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code:
+              type: string
+            message:
+              type: string
