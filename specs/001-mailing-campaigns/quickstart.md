@@ -62,3 +62,17 @@ npm run test:contract --workspace backend
 - API returns a clear retry response above 10 requests/minute.
 - No direct SQL appears in application code.
 - Failed EmailLabs calls do not leak keys and do not duplicate sends.
+
+## Implementation Validation Notes
+
+- Unit and contract test files were added for auth, rate limiting, OpenAPI
+  validation, contact validation, contact duplicate handling, campaign
+  placeholders, variable validation, send eligibility, EmailLabs mapping, worker
+  submission, MCP tool context, MCP authorization, and operator access.
+- `npm run typecheck` passed on 2026-06-06.
+- `npm run test --workspaces --if-present` passed on 2026-06-06.
+- `npm run test:contract --workspace @vercom/backend` passed on 2026-06-06.
+- Docker is installed, but this user cannot connect to `/var/run/docker.sock`, so
+  `docker compose up --build -d` could not start services in this environment.
+  Docker Compose startup and full quickstart runtime validation remain required
+  from a shell with Docker socket access.
