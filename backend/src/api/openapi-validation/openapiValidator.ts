@@ -16,27 +16,25 @@ export interface OpenApiValidators {
   getOperation(pathTemplate: string, method: HttpMethod, statusCode?: string): OpenApiOperationValidator;
 }
 
-function resolveRef(document: Record<string, unknown>, ref: string): unknown {
-  return ref.split('/').slice(1).reduce<unknown>((node, key) => {
-    if (node && typeof node === 'object') {
-      return (node as Record<string, unknown>)[key];
-    }
-    return undefined;
+function asRecord(value: unknown): Record<string, unknown> | undefined {
+  return value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : undefined;
+}
+
+function resolvePointer(document: Record<string, unknown>, ref: string): unknown {
+  return ref.split('/').slice(1).reduce<unknown>((node, segment) => {
+    return asRecord(node)?.[segment.replace(/~1/g, '/').replace(/~0/g, '~')];
   }, document);
 }
 
-function dereference(document: Record<string, unknown>, value: unknown): unknown {
-  if (Array.isArray(value)) {
-    return value.map(item => dereference(document, item));
+function resolveSchemaRefs(document: Record<string, unknown>, schema: unknown): unknown {
+  const object = asRecord(schema);
+  if (!object) {
+    return Array.isArray(schema) ? schema.map(item => resolveSchemaRefs(document, item)) : schema;
   }
-  if (!value || typeof value !== 'object') {
-    return value;
-  }
-  const object = value as Record<string, unknown>;
   if (typeof object.$ref === 'string') {
-    return dereference(document, resolveRef(document, object.$ref));
+    return resolveSchemaRefs(document, resolvePointer(document, object.$ref));
   }
-  return Object.fromEntries(Object.entries(object).map(([key, child]) => [key, dereference(document, child)]));
+  return Object.fromEntries(Object.entries(object).map(([key, value]) => [key, resolveSchemaRefs(document, value)]));
 }
 
 export function loadOpenApiDocument(filePath = defaultOpenApiPath()): Record<string, unknown> {
@@ -49,19 +47,26 @@ export function createOpenApiValidators(document = loadOpenApiDocument()): OpenA
 
   return {
     getOperation(pathTemplate, method, statusCode = '200') {
-      const paths = document.paths as Record<string, Record<string, unknown>>;
-      const operation = paths[pathTemplate]?.[method] as Record<string, unknown> | undefined;
+      const operation = getOperation(document, pathTemplate, method);
       if (!operation) {
         return {};
       }
-      const requestSchema = (((operation.requestBody as Record<string, unknown> | undefined)?.content as Record<string, unknown> | undefined)?.['application/json'] as Record<string, unknown> | undefined)?.schema;
-      const responseSchema = ((((operation.responses as Record<string, unknown> | undefined)?.[statusCode] as Record<string, unknown> | undefined)?.content as Record<string, unknown> | undefined)?.['application/json'] as Record<string, unknown> | undefined)?.schema;
+      const requestSchema = getJsonSchema(operation.requestBody);
+      const responseSchema = getJsonSchema(asRecord(operation.responses)?.[statusCode]);
       return {
-        validateRequestBody: requestSchema ? ajv.compile(dereference(document, requestSchema) as object) : undefined,
-        validateResponseBody: responseSchema ? ajv.compile(dereference(document, responseSchema) as object) : undefined
+        validateRequestBody: requestSchema ? ajv.compile(resolveSchemaRefs(document, requestSchema) as object) : undefined,
+        validateResponseBody: responseSchema ? ajv.compile(resolveSchemaRefs(document, responseSchema) as object) : undefined
       };
     }
   };
+}
+
+function getOperation(document: Record<string, unknown>, pathTemplate: string, method: HttpMethod): Record<string, unknown> | undefined {
+  return asRecord(asRecord(document.paths)?.[pathTemplate])?.[method] as Record<string, unknown> | undefined;
+}
+
+function getJsonSchema(section: unknown): unknown {
+  return asRecord(asRecord(asRecord(section)?.content)?.['application/json'])?.schema;
 }
 
 function defaultOpenApiPath(): string {
