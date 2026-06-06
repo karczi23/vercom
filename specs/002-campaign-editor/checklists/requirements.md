@@ -33,4 +33,8 @@
 
 - Clarification resolved on 2026-06-06:
   - Font list is Arial, Georgia, Times New Roman, and Verdana.
+- Additional decisions resolved on 2026-06-06:
+  - Toolbar controls generate only approved HTML; typed/pasted HTML is sanitized as plain text.
+  - Any syntactically valid `{{ value }}` placeholder is allowed; variables are validated before send.
+  - Assigned operators can force resend uncertain recipients after acknowledging duplicate risk.
 - Specification is ready for `/speckit-plan`.
