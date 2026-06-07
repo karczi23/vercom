@@ -13,7 +13,7 @@ export class ApiClient {
     if (token) {
       headers.set('Authorization', `Bearer ${token}`);
     }
-    const response = await fetch(`${this.options.baseUrl ?? '/api'}${path}`, { ...init, headers });
+    const response = await fetch(`${this.options.baseUrl ?? defaultApiBaseUrl()}${path}`, { ...init, headers });
     if (!response.ok) {
       throw await response.json();
     }
@@ -22,4 +22,8 @@ export class ApiClient {
     }
     return response.json() as Promise<T>;
   }
+}
+
+function defaultApiBaseUrl(): string {
+  return import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:4000/api';
 }
