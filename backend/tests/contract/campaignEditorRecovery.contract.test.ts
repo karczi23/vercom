@@ -13,7 +13,7 @@ describe('campaign editor recovery contract', () => {
     })).toBe(true);
 
     expect(validators.getOperation('/campaigns/{campaignId}/send-outcomes', 'get').validateResponseBody?.({
-      items: [{ campaignId: 'campaign-1', contactId: 'contact-1', contactEmail: 'a@example.com', contactName: 'A', sendStatus: 'uncertain', requiresReview: true, forceResendAllowed: true }]
+      items: [{ campaignId: 'campaign-1', contactId: 'contact-1', contactEmail: 'a@example.com', contactName: 'A', sendStatus: 'uncertain', requiresReview: true, forceResendAllowed: true, retryFailedAllowed: false }]
     })).toBe(true);
   });
 
@@ -22,5 +22,10 @@ describe('campaign editor recovery contract', () => {
     expect(operation.validateRequestBody?.({ acknowledgedDuplicateRisk: true })).toBe(true);
     expect(operation.validateRequestBody?.({ acknowledgedDuplicateRisk: false })).toBe(false);
     expect(operation.validateResponseBody?.({ campaignId: 'campaign-1', contactId: 'contact-1', sendJobId: 'job-1', status: 'force_resend_queued' })).toBe(true);
+  });
+
+  it('validates retry failed response', () => {
+    const operation = validators.getOperation('/campaigns/{campaignId}/retry-failed', 'post', '202');
+    expect(operation.validateResponseBody?.({ campaignId: 'campaign-1', sendJobId: 'job-1', status: 'retry_failed_queued' })).toBe(true);
   });
 });

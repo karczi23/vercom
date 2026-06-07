@@ -28,4 +28,13 @@ export class SendRecoveryService {
 
     return this.repository.queueForceResend(campaignId, contactId, user.id, reason);
   }
+
+  async retryFailedRecipients(campaignId: string) {
+    const outcomes = await this.repository.listSendOutcomes(campaignId);
+    if (!outcomes.some(item => item.sendStatus === 'failed' && item.retryFailedAllowed)) {
+      throw new ApiError(409, 'retry_failed_not_allowed', 'Campaign has no failed recipients to retry');
+    }
+
+    return this.repository.queueFailedRetry(campaignId);
+  }
 }

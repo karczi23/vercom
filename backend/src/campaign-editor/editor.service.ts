@@ -103,6 +103,11 @@ export class EditorService {
     const request = parseForceResendRequest(raw);
     return this.recovery.forceResendUncertainRecipient(user, campaignId, contactId, request.acknowledgedDuplicateRisk, request.reason);
   }
+
+  async retryFailed(user: AuthenticatedUser, campaignId: string) {
+    await requireCampaignEditorAccess(this.db, user, campaignId);
+    return this.recovery.retryFailedRecipients(campaignId);
+  }
 }
 
 function parseEditorInput(raw: unknown): CampaignEditorInput {

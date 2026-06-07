@@ -170,6 +170,17 @@ paths:
         '204':
           description: Deleted
   /campaigns/{campaignId}/recipients:
+    get:
+      summary: List selected campaign recipients
+      parameters:
+        - $ref: '#/components/parameters/CampaignId'
+      responses:
+        '200':
+          description: Current recipient selection
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecipientsResponse'
     post:
       summary: Replace campaign recipients
       parameters:
@@ -318,6 +329,26 @@ paths:
                 $ref: '#/components/schemas/SendOutcomeList'
         '403':
           $ref: '#/components/responses/Forbidden'
+  /campaigns/{campaignId}/retry-failed:
+    post:
+      summary: Queue a safe retry for failed campaign recipients
+      parameters:
+        - $ref: '#/components/parameters/CampaignId'
+      responses:
+        '202':
+          description: Failed-recipient retry job queued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetryFailedResponse'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          description: Campaign has no failed recipients to retry
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /campaigns/{campaignId}/recipients/{contactId}/force-resend:
     post:
       summary: Force resend for an uncertain recipient after duplicate-risk acknowledgement
@@ -459,7 +490,7 @@ components:
       enum: [draft, ready, sending, sent, failed]
     CampaignInput:
       type: object
-      required: [name, subject, templateContent, fallbackVariables, assignedOperatorId]
+      required: [name, subject, templateContent, fallbackVariables]
       properties:
         name:
           type: string
@@ -475,8 +506,6 @@ components:
           type: object
           additionalProperties:
             type: string
-        assignedOperatorId:
-          type: string
     CampaignUpdateInput:
       type: object
       properties:
@@ -500,9 +529,11 @@ components:
       allOf:
         - $ref: '#/components/schemas/CampaignInput'
         - type: object
-          required: [id, status]
+          required: [id, assignedOperatorId, status]
           properties:
             id:
+              type: string
+            assignedOperatorId:
               type: string
             status:
               $ref: '#/components/schemas/CampaignStatus'
@@ -515,6 +546,14 @@ components:
           items:
             $ref: '#/components/schemas/Campaign'
     RecipientsInput:
+      type: object
+      required: [contactIds]
+      properties:
+        contactIds:
+          type: array
+          items:
+            type: string
+    RecipientsResponse:
       type: object
       required: [contactIds]
       properties:
@@ -678,7 +717,7 @@ components:
             $ref: '#/components/schemas/RecipientSendOutcome'
     RecipientSendOutcome:
       type: object
-      required: [campaignId, contactId, contactEmail, contactName, sendStatus, requiresReview, forceResendAllowed]
+      required: [campaignId, contactId, contactEmail, contactName, sendStatus, requiresReview, forceResendAllowed, retryFailedAllowed]
       properties:
         campaignId:
           type: string
@@ -704,6 +743,8 @@ components:
           type: boolean
         forceResendAllowed:
           type: boolean
+        retryFailedAllowed:
+          type: boolean
     ForceResendRequest:
       type: object
       required: [acknowledgedDuplicateRisk]
@@ -728,6 +769,17 @@ components:
         status:
           type: string
           enum: [force_resend_queued]
+    RetryFailedResponse:
+      type: object
+      required: [campaignId, sendJobId, status]
+      properties:
+        campaignId:
+          type: string
+        sendJobId:
+          type: string
+        status:
+          type: string
+          enum: [retry_failed_queued]
     ErrorResponse:
       type: object
       required: [error]

@@ -57,5 +57,13 @@ export function createCampaignEditorRoutes(db: Database) {
     }
   });
 
+  router.post('/campaigns/:campaignId/retry-failed', validateOpenApi('/campaigns/{campaignId}/retry-failed', 'post', '202'), async (req, res, next) => {
+    try {
+      res.status(202).json(await service.retryFailed(req.user!, String(req.params.campaignId)));
+    } catch (error) {
+      next(error);
+    }
+  });
+
   return router;
 }

@@ -9,7 +9,8 @@ describe('campaign editor MCP tools', () => {
       'campaign_editor_save_draft',
       'campaign_editor_validate',
       'campaign_send_outcomes',
-      'campaign_force_resend_uncertain_recipient'
+      'campaign_force_resend_uncertain_recipient',
+      'campaign_retry_failed_recipients'
     ]);
   });
 });

@@ -2,7 +2,8 @@ import { and, desc, eq } from 'drizzle-orm';
 import type {
   CampaignEditorDraft,
   ForceResendResponse,
-  RecipientSendOutcome
+  RecipientSendOutcome,
+  RetryFailedResponse
 } from '@vercom/common/types/campaign-editor';
 import type { Database } from '../db/client.js';
 import {
@@ -113,7 +114,8 @@ export class EditorRepository {
         contactName: row.contactName,
         sendStatus,
         requiresReview: sendStatus === 'uncertain',
-        forceResendAllowed: sendStatus === 'uncertain'
+        forceResendAllowed: sendStatus === 'uncertain',
+        retryFailedAllowed: sendStatus === 'failed'
       };
       if (row.providerMessageId) {
         outcome.providerMessageId = row.providerMessageId;
@@ -140,5 +142,13 @@ export class EditorRepository {
       sendJobId
     });
     return { campaignId, contactId, sendJobId, status: 'force_resend_queued' };
+  }
+
+  async queueFailedRetry(campaignId: string): Promise<RetryFailedResponse> {
+    const jobs = await this.db.insert(sendJobs).values({ campaignId }).returning({ id: sendJobs.id });
+    await this.db.update(campaignRecipients)
+      .set({ sendStatus: 'pending', updatedAt: new Date() })
+      .where(and(eq(campaignRecipients.campaignId, campaignId), eq(campaignRecipients.sendStatus, 'failed')));
+    return { campaignId, sendJobId: jobs[0]!.id, status: 'retry_failed_queued' };
   }
 }

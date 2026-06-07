@@ -12,6 +12,7 @@ export function createCampaignEditorTools(context: McpToolContext) {
     campaign_editor_validate: (input: { campaignId: string }) => service.validatePlaceholders(context.user, input.campaignId),
     campaign_send_outcomes: (input: { campaignId: string }) => service.listSendOutcomes(context.user, input.campaignId),
     campaign_force_resend_uncertain_recipient: (input: { campaignId: string; contactId: string; acknowledgedDuplicateRisk: boolean; reason?: string }) =>
-      service.forceResend(context.user, input.campaignId, input.contactId, input)
+      service.forceResend(context.user, input.campaignId, input.contactId, input),
+    campaign_retry_failed_recipients: (input: { campaignId: string }) => service.retryFailed(context.user, input.campaignId)
   };
 }

@@ -3,7 +3,7 @@ import type { Campaign } from '@vercom/common/types/mailing-campaigns';
 import { ApiError, forbidden, notFound } from '../common/apiErrors.js';
 import { canAccessCampaign } from '../auth/authorization.js';
 import type { Database } from '../db/client.js';
-import { validateCampaignInput, validateCampaignUpdateInput } from './campaignValidation.js';
+import { validateCampaignCreateInput, validateCampaignUpdateInput } from './campaignValidation.js';
 import type { CampaignRepository } from './campaignRepository.js';
 import type { CampaignRecipientRepository } from './campaignRecipientRepository.js';
 import { validateRecipientVariables } from './variableValidationService.js';
@@ -27,8 +27,11 @@ export class CampaignService {
   }
 
   async create(user: AuthenticatedUser, raw: unknown): Promise<Campaign> {
-    const input = validateCampaignInput(raw);
-    return this.campaigns.create(input, user.id);
+    if (user.role !== 'operator') {
+      throw forbidden('Only operators can create campaigns');
+    }
+    const input = validateCampaignCreateInput(raw);
+    return this.campaigns.create({ ...input, assignedOperatorId: user.id }, user.id);
   }
 
   async update(user: AuthenticatedUser, id: string, raw: unknown): Promise<Campaign> {
@@ -55,6 +58,11 @@ export class CampaignService {
       throw forbidden('Caller cannot select one or more contacts');
     }
     await this.recipients.replaceRecipients(campaignId, contactIds);
+  }
+
+  async listRecipients(user: AuthenticatedUser, campaignId: string): Promise<{ contactIds: string[] }> {
+    await this.get(user, campaignId);
+    return { contactIds: await this.recipients.listRecipientIds(campaignId) };
   }
 
   async validateVariables(user: AuthenticatedUser, campaignId: string, approve: boolean) {

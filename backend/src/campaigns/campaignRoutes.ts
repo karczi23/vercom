@@ -52,6 +52,13 @@ export function createCampaignRoutes(db: Database) {
       next(error);
     }
   });
+  router.get('/campaigns/:campaignId/recipients', validateOpenApi('/campaigns/{campaignId}/recipients', 'get'), async (req, res, next) => {
+    try {
+      res.json(await service.listRecipients(req.user!, String(req.params.campaignId)));
+    } catch (error) {
+      next(error);
+    }
+  });
   router.post('/campaigns/:campaignId/recipients', validateOpenApi('/campaigns/{campaignId}/recipients', 'post'), async (req, res, next) => {
     try {
       await service.replaceRecipients(req.user!, String(req.params.campaignId), req.body.contactIds ?? []);
