@@ -3,8 +3,12 @@ import type { ApiClient } from '../api/client.js';
 
 export function createCampaignApi(client: ApiClient) {
   return {
-    list(): Promise<{ items: Campaign[] }> {
-      return client.request('/campaigns');
+    list(options: { assignedEditorId?: string } = {}): Promise<{ items: Campaign[] }> {
+      const params = new URLSearchParams();
+      if (options.assignedEditorId) {
+        params.set('assignedEditorId', options.assignedEditorId);
+      }
+      return client.request(`/campaigns${params.size > 0 ? `?${params.toString()}` : ''}`);
     },
     create(input: CampaignInput): Promise<Campaign> {
       return client.request('/campaigns', { method: 'POST', body: JSON.stringify(input) });

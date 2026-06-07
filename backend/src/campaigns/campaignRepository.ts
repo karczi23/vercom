@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import type { Campaign, CampaignInput } from '@vercom/common/types/mailing-campaigns';
 import type { AuthenticatedUser } from '@vercom/common/types/shared';
 import type { Database } from '../db/client.js';
@@ -20,11 +20,17 @@ function mapCampaign(row: typeof campaigns.$inferSelect): Campaign {
 export class CampaignRepository {
   constructor(private readonly db: Database) {}
 
-  async list(user: AuthenticatedUser, limit = 25, offset = 0): Promise<Campaign[]> {
+  async list(user: AuthenticatedUser, limit = 25, offset = 0, assignedEditorId?: string): Promise<Campaign[]> {
     const query = this.db.select().from(campaigns);
-    const rows = user.role === 'admin'
-      ? await query.limit(limit).offset(offset)
-      : await query.where(eq(campaigns.assignedOperatorId, user.id)).limit(limit).offset(offset);
+    const effectiveAssignedEditorId = user.role === 'admin' ? assignedEditorId : user.id;
+    const rows = effectiveAssignedEditorId
+      ? await query.where(and(
+        eq(campaigns.assignedOperatorId, effectiveAssignedEditorId),
+        user.role === 'operator' && assignedEditorId && assignedEditorId !== user.id
+          ? eq(campaigns.assignedOperatorId, assignedEditorId)
+          : undefined
+      )).limit(limit).offset(offset)
+      : await query.limit(limit).offset(offset);
     return rows.map(mapCampaign);
   }
 

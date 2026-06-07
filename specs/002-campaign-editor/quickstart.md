@@ -93,12 +93,14 @@ Required contract coverage:
 Recorded on 2026-06-07:
 
 - `npm run typecheck`: PASS
-- `npm run test`: PASS, 37 test files and 56 tests
+- `npm run test`: PASS, 40 test files and 60 tests
 - `npm run build`: PASS
 - Source checks: PASS for OpenAPI-derived editor validation through the shared
   OpenAPI document, assigned-operator authorization, no direct SQL in
   `backend/src/campaign-editor`, and no EmailLabs call in editor/recovery HTTP or
   MCP code paths.
+- Assigned editor campaign selection coverage: PASS for OpenAPI contract,
+  backend service filtering, and frontend selector behavior.
 
 Manual browser/container validation remains the follow-up for visual editor
 behavior in a real browser and Docker Compose runtime.

@@ -176,14 +176,14 @@ recovery is duplicate-safe and force resend is explicit.
 **Purpose**: Update the main campaign page so users select an editor/operator and
 only campaigns assigned to that editor are selectable for editing.
 
-- [ ] T070 [P] [US1] Add backend contract coverage for `GET /campaigns?assignedEditorId=...` filtering in `backend/tests/contract/campaignEditorAssignment.contract.test.ts`
-- [ ] T071 [P] [US1] Add backend unit tests for assigned editor campaign filtering in `backend/tests/unit/campaigns/campaignAssignmentFilter.test.ts`
-- [ ] T072 [P] [US1] Add frontend unit tests for assigned editor selector behavior in `frontend/tests/unit/campaigns/AssignedCampaignSelector.test.tsx`
-- [ ] T073 [US1] Extend campaign listing API contract to accept `assignedEditorId` query filtering in `backend/src/api/openapi.yaml`
-- [ ] T074 [US1] Implement assigned editor filtering in the campaign repository/service list flow in `backend/src/campaigns/campaignRepository.ts` and `backend/src/campaigns/campaignService.ts`
-- [ ] T075 [US1] Add frontend assigned editor selector and empty state in `frontend/src/campaigns/AssignedCampaignSelector.tsx`
-- [ ] T076 [US1] Wire selected editor state into `frontend/src/campaigns/CampaignsPage.tsx` so only assigned campaigns can open the editor
-- [ ] T077 [US1] Update quickstart validation results after assigned editor selection manual checks in `specs/002-campaign-editor/quickstart.md`
+- [X] T070 [P] [US1] Add backend contract coverage for `GET /campaigns?assignedEditorId=...` filtering in `backend/tests/contract/campaignEditorAssignment.contract.test.ts`
+- [X] T071 [P] [US1] Add backend unit tests for assigned editor campaign filtering in `backend/tests/unit/campaigns/campaignAssignmentFilter.test.ts`
+- [X] T072 [P] [US1] Add frontend unit tests for assigned editor selector behavior in `frontend/tests/unit/campaigns/AssignedCampaignSelector.test.tsx`
+- [X] T073 [US1] Extend campaign listing API contract to accept `assignedEditorId` query filtering in `backend/src/api/openapi.yaml`
+- [X] T074 [US1] Implement assigned editor filtering in the campaign repository/service list flow in `backend/src/campaigns/campaignRepository.ts` and `backend/src/campaigns/campaignService.ts`
+- [X] T075 [US1] Add frontend assigned editor selector and empty state in `frontend/src/campaigns/AssignedCampaignSelector.tsx`
+- [X] T076 [US1] Wire selected editor state into `frontend/src/campaigns/CampaignsPage.tsx` so only assigned campaigns can open the editor
+- [X] T077 [US1] Update quickstart validation results after assigned editor selection manual checks in `specs/002-campaign-editor/quickstart.md`
 
 ---
 

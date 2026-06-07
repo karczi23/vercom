@@ -15,8 +15,8 @@ export class CampaignService {
     private readonly recipients: CampaignRecipientRepository
   ) {}
 
-  list(user: AuthenticatedUser, limit?: number, offset?: number): Promise<Campaign[]> {
-    return this.campaigns.list(user, limit, offset);
+  list(user: AuthenticatedUser, limit?: number, offset?: number, assignedEditorId?: string): Promise<Campaign[]> {
+    return this.campaigns.list(user, limit, offset, assignedEditorId);
   }
 
   async get(user: AuthenticatedUser, id: string): Promise<Campaign> {

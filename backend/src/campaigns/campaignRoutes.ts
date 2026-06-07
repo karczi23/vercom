@@ -11,7 +11,14 @@ export function createCampaignRoutes(db: Database) {
 
   router.get('/campaigns', validateOpenApi('/campaigns', 'get'), async (req, res, next) => {
     try {
-      res.json({ items: await service.list(req.user!, Number(req.query.limit ?? 25), Number(req.query.offset ?? 0)) });
+      res.json({
+        items: await service.list(
+          req.user!,
+          Number(req.query.limit ?? 25),
+          Number(req.query.offset ?? 0),
+          typeof req.query.assignedEditorId === 'string' ? req.query.assignedEditorId : undefined
+        )
+      });
     } catch (error) {
       next(error);
     }
