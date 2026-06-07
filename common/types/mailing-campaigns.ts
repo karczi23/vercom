@@ -16,6 +16,7 @@ export interface ContactInput {
 
 export interface Contact extends ContactInput {
   id: Identifier;
+  owningOperatorId: Identifier;
   validationStatus: 'valid' | 'invalid';
 }
 

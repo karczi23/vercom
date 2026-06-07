@@ -42,13 +42,14 @@ export const users = pgTable('users', {
 
 export const contacts = pgTable('contacts', {
   id: uuid('id').primaryKey().defaultRandom(),
+  owningOperatorId: uuid('owning_operator_id').notNull().references(() => users.id),
   email: text('email').notNull(),
   name: text('name').notNull(),
   personalizationData: jsonb('personalization_data').$type<Record<string, string>>().notNull().default({}),
   validationStatus: validationStatus('validation_status').notNull().default('valid'),
   ...timestamps
 }, table => ({
-  emailUnique: uniqueIndex('contacts_email_unique').on(table.email)
+  ownerEmailUnique: uniqueIndex('contacts_owner_email_unique').on(table.owningOperatorId, table.email)
 }));
 
 export const campaigns = pgTable('campaigns', {

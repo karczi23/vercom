@@ -45,6 +45,11 @@ export class CampaignService {
 
   async replaceRecipients(user: AuthenticatedUser, campaignId: string, contactIds: string[]): Promise<void> {
     await this.ensureAccess(user, campaignId);
+    const uniqueContactIds = [...new Set(contactIds)];
+    const accessibleContactCount = await this.recipients.countAccessibleContacts(user, uniqueContactIds);
+    if (accessibleContactCount !== uniqueContactIds.length) {
+      throw forbidden('Caller cannot select one or more contacts');
+    }
     await this.recipients.replaceRecipients(campaignId, contactIds);
   }
 

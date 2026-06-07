@@ -7,16 +7,29 @@ export function isSafeToSubmit(sendStatus: string): boolean {
 }
 
 export class SendWorkerService {
-  constructor(private readonly emailLabs: EmailLabsClient) {}
+  constructor(
+    private readonly emailLabs: EmailLabsClient,
+    private readonly deliveryConfig = { smtpAccount: 'test.smtp', from: 'sender@example.com' }
+  ) {}
 
   async submit(campaign: Campaign, contacts: Array<{ id: string; email: string; name: string; personalizationData: Record<string, string> }>) {
-    const payload = mapCampaignToEmailLabsPayload(campaign, contacts.map(contact => ({
+    const contactModels = contacts.map(contact => ({
       id: contact.id,
+      owningOperatorId: campaign.assignedOperatorId,
       email: contact.email,
       name: contact.name,
       personalizationData: contact.personalizationData,
       validationStatus: 'valid'
-    })));
-    return this.emailLabs.send(payload);
+    } as const));
+    const payload = mapCampaignToEmailLabsPayload(campaign, contactModels, this.deliveryConfig);
+    const result = await this.emailLabs.send(payload);
+    return {
+      ...result,
+      recipientOutcomes: contacts.map(contact => ({
+        contactId: contact.id,
+        email: contact.email,
+        providerMessageId: result.providerMessageIds?.[contact.email]
+      }))
+    };
   }
 }

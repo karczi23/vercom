@@ -12,7 +12,7 @@ export function createContactRoutes(db: Database): Router {
     try {
       const limit = Number(req.query.limit ?? 25);
       const offset = Number(req.query.offset ?? 0);
-      res.json({ items: await service.list(req.query.query as string | undefined, limit, offset) });
+      res.json({ items: await service.list(req.user!, req.query.query as string | undefined, limit, offset) });
     } catch (error) {
       next(error);
     }
@@ -20,7 +20,7 @@ export function createContactRoutes(db: Database): Router {
 
   router.post('/contacts', async (req, res, next) => {
     try {
-      res.status(201).json(await service.create(req.body));
+      res.status(201).json(await service.create(req.user!, req.body));
     } catch (error) {
       next(error);
     }
@@ -28,7 +28,7 @@ export function createContactRoutes(db: Database): Router {
 
   router.get('/contacts/:contactId', async (req, res, next) => {
     try {
-      res.json(await service.get(req.params.contactId));
+      res.json(await service.get(req.user!, req.params.contactId));
     } catch (error) {
       next(error);
     }
@@ -36,7 +36,7 @@ export function createContactRoutes(db: Database): Router {
 
   router.patch('/contacts/:contactId', async (req, res, next) => {
     try {
-      res.json(await service.update(req.params.contactId, req.body));
+      res.json(await service.update(req.user!, req.params.contactId, req.body));
     } catch (error) {
       next(error);
     }
@@ -44,7 +44,7 @@ export function createContactRoutes(db: Database): Router {
 
   router.delete('/contacts/:contactId', async (req, res, next) => {
     try {
-      await service.delete(req.params.contactId);
+      await service.delete(req.user!, req.params.contactId);
       res.status(204).end();
     } catch (error) {
       next(error);

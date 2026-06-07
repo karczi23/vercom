@@ -1,4 +1,5 @@
-import { and, eq } from 'drizzle-orm';
+import { and, eq, inArray } from 'drizzle-orm';
+import type { AuthenticatedUser } from '@vercom/common/types/shared';
 import type { Database } from '../db/client.js';
 import { campaignRecipients, contacts } from '../db/schema.js';
 
@@ -9,6 +10,16 @@ export class CampaignRecipientRepository {
     await this.db.delete(campaignRecipients).where(eq(campaignRecipients.campaignId, campaignId));
     if (contactIds.length === 0) return;
     await this.db.insert(campaignRecipients).values(contactIds.map(contactId => ({ campaignId, contactId })));
+  }
+
+  async countAccessibleContacts(user: AuthenticatedUser, contactIds: string[]): Promise<number> {
+    const uniqueIds = [...new Set(contactIds)];
+    if (uniqueIds.length === 0) return 0;
+    const accessCondition = user.role === 'admin'
+      ? inArray(contacts.id, uniqueIds)
+      : and(inArray(contacts.id, uniqueIds), eq(contacts.owningOperatorId, user.id));
+    const rows = await this.db.select({ id: contacts.id }).from(contacts).where(accessCondition);
+    return rows.length;
   }
 
   async listRecipientContacts(campaignId: string) {

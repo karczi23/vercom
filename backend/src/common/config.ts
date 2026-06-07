@@ -3,6 +3,8 @@ export interface AppConfig {
   authTokenSecret: string;
   emailLabsApplicationKey: string;
   emailLabsAuthorization: string;
+  emailLabsSmtpAccount: string;
+  emailLabsFromEmail: string;
   emailLabsApiBaseUrl: string;
   port: number;
 }
@@ -21,6 +23,8 @@ export function loadConfig(): AppConfig {
     authTokenSecret: readRequired('AUTH_TOKEN_SECRET'),
     emailLabsApplicationKey: readRequired('EMAILLABS_APPLICATION_KEY'),
     emailLabsAuthorization: readRequired('EMAILLABS_AUTHORIZATION'),
+    emailLabsSmtpAccount: readRequired('EMAILLABS_SMTP_ACCOUNT'),
+    emailLabsFromEmail: readRequired('EMAILLABS_FROM_EMAIL'),
     emailLabsApiBaseUrl: process.env.EMAILLABS_API_BASE_URL ?? 'https://api.emaillabs.net.pl',
     port: Number(process.env.PORT ?? 4000)
   };
