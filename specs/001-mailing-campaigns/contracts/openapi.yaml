@@ -38,7 +38,7 @@ paths:
             type: string
       responses:
         '200':
-          description: Contact list
+          description: Contact list scoped by caller permissions
           content:
             application/json:
               schema:
@@ -53,7 +53,7 @@ paths:
               $ref: '#/components/schemas/ContactInput'
       responses:
         '201':
-          description: Created contact
+          description: Created contact owned by the authenticated operator
           content:
             application/json:
               schema:
@@ -263,7 +263,7 @@ components:
     Unauthorized:
       description: Missing or invalid bearer token
     DuplicateContact:
-      description: Contact email already exists
+      description: Contact email already exists for the authenticated operator
       content:
         application/json:
           schema:
@@ -306,9 +306,11 @@ components:
       allOf:
         - $ref: '#/components/schemas/ContactInput'
         - type: object
-          required: [id, validationStatus]
+          required: [id, owningOperatorId, validationStatus]
           properties:
             id:
+              type: string
+            owningOperatorId:
               type: string
             validationStatus:
               type: string

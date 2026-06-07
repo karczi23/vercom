@@ -9,20 +9,22 @@
 **Validation**: `username` unique and non-empty. `role` is `admin` or `operator`.
 Passwords are stored only as Argon2id hashes.
 
-**Relationships**: Operators can be assigned campaigns. Admins can access all
-records.
+**Relationships**: Operators own contacts they create and can be assigned
+campaigns. Admins can access all contacts and campaigns.
 
 ## Contact
 
 **Purpose**: Stores recipient delivery data and variables used for provider-side
 placeholder replacement.
 
-**Fields**: `id`, `email`, `name`, `personalizationData`, `validationStatus`,
-`createdAt`, `updatedAt`.
+**Fields**: `id`, `owningOperatorId`, `email`, `name`, `personalizationData`,
+`validationStatus`, `createdAt`, `updatedAt`.
 
 **Validation**: `email` and `name` are required. `email` must be valid,
-normalized to lowercase, and unique. Duplicate email submissions are rejected
-without modifying the existing contact.
+normalized to lowercase, and unique per owning operator. Duplicate email
+submissions by the same owning operator are rejected without modifying the
+existing contact, while different operators may store contacts with the same
+email address.
 
 **Personalization Data**: `personalizationData` contains optional key-value
 variables passed to EmailLabs for placeholders beyond the required contact
@@ -32,7 +34,9 @@ campaign can use `{{ company }}` or `{{ plan }}`. Required built-in variables
 such as contact name and email come from first-class contact fields, not from
 `personalizationData`.
 
-**Relationships**: Contacts can belong to many campaign recipient rows.
+**Relationships**: Contacts belong to the operator who created them and can
+belong to many campaign recipient rows. Admins can access all contacts;
+operators can access only their own contacts.
 
 ## Campaign
 

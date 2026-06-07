@@ -88,6 +88,8 @@ errors provide field-specific correction guidance.
 - [X] T040 [P] [US1] Add contract tests for contact CRUD OpenAPI validation in `backend/tests/contract/contacts.contract.test.ts`
 - [X] T041 [P] [US1] Add frontend unit tests for contact form validation feedback in `frontend/tests/unit/contacts/ContactForm.test.tsx`
 - [X] T042 [US1] Add manual validation checklist for contact CRUD in `specs/001-mailing-campaigns/quickstart.md`
+- [ ] T113 [P] [US1] Add unit tests for per-operator duplicate contact handling and admin/operator contact visibility in `backend/tests/unit/contacts/contactService.test.ts`
+- [ ] T114 [P] [US1] Add contract tests proving operators cannot list, read, update, or delete contacts owned by other operators in `backend/tests/contract/operatorAccess.contract.test.ts`
 
 ### Implementation for User Story 1
 
@@ -101,6 +103,10 @@ errors provide field-specific correction guidance.
 - [X] T050 [US1] Implement contact create/edit form with field-specific errors in `frontend/src/contacts/ContactForm.tsx`
 - [X] T051 [US1] Implement contact delete confirmation flow in `frontend/src/contacts/DeleteContactDialog.tsx`
 - [X] T052 [US1] Wire contacts navigation into application layout in `frontend/src/layout/AppLayout.tsx`
+- [ ] T115 [US1] Add `owningOperatorId` to shared contact types and OpenAPI contact responses in `common/types/mailing-campaigns.ts` and `backend/src/api/openapi.yaml`
+- [ ] T116 [US1] Recreate local contact storage with `owning_operator_id` and a `(owning_operator_id, email)` unique index, dropping legacy ownerless local contacts in `backend/src/db/schema.ts` and `backend/src/db/migrations/0001_initial.ts`
+- [ ] T117 [US1] Scope contact repository list, lookup, update, delete, and duplicate queries by authenticated user role and owning operator in `backend/src/contacts/contactRepository.ts`
+- [ ] T118 [US1] Pass authenticated user context through contact routes and service methods so operators can access only their own contacts while admins can access all contacts in `backend/src/contacts/contactRoutes.ts` and `backend/src/contacts/contactService.ts`
 
 **Checkpoint**: User Story 1 is independently functional and testable as the MVP.
 
@@ -139,6 +145,7 @@ verify EmailLabs has not been called.
 - [X] T068 [US2] Implement campaign create/edit form in `frontend/src/campaigns/CampaignForm.tsx`
 - [X] T069 [US2] Implement recipient selection UI in `frontend/src/campaigns/RecipientSelector.tsx`
 - [X] T070 [US2] Implement variable validation and fallback approval UI in `frontend/src/campaigns/VariableValidationPanel.tsx`
+- [ ] T119 [US2] Enforce contact ownership during campaign recipient replacement so operators can select only their own contacts while admins can select any contact in `backend/src/campaigns/campaignService.ts` and `backend/src/campaigns/campaignRecipientRepository.ts`
 
 **Checkpoint**: User Stories 1 and 2 both work independently; campaign
 preparation is complete without sending.
@@ -209,6 +216,7 @@ checks, including invalid and duplicate inputs.
 - [X] T095 [US4] Ensure MCP tools reuse service-layer validation and authorization in `backend/src/mcp/toolContext.ts`
 - [X] T096 [US4] Implement API authorization tests for admin and operator role boundaries in `backend/tests/contract/operatorAccess.contract.test.ts`
 - [X] T097 [US4] Implement frontend operator access error handling in `frontend/src/common/AuthorizationBoundary.tsx`
+- [ ] T120 [US4] Pass authenticated tool context into MCP contact tools and verify operators cannot list, mutate, or delete contacts owned by other operators in `backend/src/mcp/contactTools.ts` and `backend/tests/unit/mcp/mcpAuthorization.test.ts`
 
 **Checkpoint**: API and MCP automation parity is complete with assigned-operator
 restrictions.
@@ -226,7 +234,7 @@ restrictions.
 - [X] T102 Confirm logs redact EmailLabs keys, bearer tokens, and provider secrets in `backend/src/common/logger.ts`
 - [ ] T104 Confirm Docker Compose starts backend, frontend, worker, MCP server, and database in `docker-compose.yml`
 - [X] T105 Run all workspace unit and contract tests with `package.json`
-- [ ] T106 Run quickstart validation and record results in `specs/001-mailing-campaigns/quickstart.md`
+- [ ] T106 Run quickstart validation, including 375px, 768px, and 1440px viewport checks, and record results in `specs/001-mailing-campaigns/quickstart.md`
 
 ---
 

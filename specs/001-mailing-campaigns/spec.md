@@ -202,10 +202,11 @@ web interface, including validation and error cases.
   and MCP server, subject to the same validation and authorization rules.
 - **FR-023**: The system MUST restrict access across web, API, and MCP surfaces
   using the owner-approved access model: admin and operator roles. Admins can
-  manage all contacts, campaigns, settings, and access. Operators can manage
-  only the contacts they added and only the campaigns assigned to them; operators
-  MUST NOT view, edit, delete, or use contacts added by other operators, and MUST
-  NOT edit campaigns assigned to other operators.
+  access all contacts and campaigns, and implementation must seed admin and
+  operator users for local validation. Operators can manage only the contacts
+  they added and only the campaigns assigned to them; operators MUST NOT view,
+  edit, delete, or use contacts added by other operators, and MUST NOT edit
+  campaigns assigned to other operators.
 - **FR-024**: Every endpoint MUST validate input and output using rules derived
   from the OpenAPI specification.
 - **FR-025**: OpenAPI-derived validation MUST remain straightforward to maintain:
@@ -265,7 +266,7 @@ web interface, including validation and error cases.
   delete, select, or send to contacts added by other operators, and cannot view,
   edit, or send campaigns assigned to other operators across web, API, and MCP
   surfaces.
-- **SC-010**: In viewport checks for common desktop and mobile widths, all primary
+- **SC-010**: In viewport checks at 375px, 768px, and 1440px widths, all primary
   forms remain readable and usable without overlapping controls or clipped text.
 - **SC-011**: Login attempts with incorrect usernames or passwords fail in 100%
   of tested cases and never return an access token.

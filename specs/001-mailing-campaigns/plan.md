@@ -34,11 +34,11 @@ end-to-end campaign flows
 and Docker Compose
 
 **Project Type**: Web application with backend API, frontend UI, background worker,
-database, and MCP server
+database, and separate MCP server runtime
 
 **Performance Goals**: Human contact CRUD in under 2 minutes; campaign preparation
 in under 10 minutes after contacts exist; primary forms remain readable and
-usable on common desktop and mobile viewport widths
+usable at 375px, 768px, and 1440px viewport widths
 
 **Constraints**: Minimal libraries; OpenAPI is source of truth for endpoint
 validation; operators can only access assigned campaigns; external email failures
@@ -67,15 +67,19 @@ configured application key and secret key, `smtp_account`, `from`, `subject`,
 200-recipient request batches, request timeout, bounded retries, provider
 message-id mapping, and recorded failure states
 
-**Container Topology**: Separate backend API, frontend, worker, and PostgreSQL
-containers defined with Dockerfiles and Docker Compose
+**Container Topology**: Separate backend API, frontend, worker, MCP server, and
+PostgreSQL containers defined with Dockerfiles and Docker Compose. The MCP
+container runs the `backend/src/mcp` entrypoint as its own service.
 
-**Clarifications**: Duplicate contacts use email-only rejection; EmailLabs
-performs placeholder replacement from form-encoded `sendmail_templates` variables
-supplied by Vercom; missing placeholder data uses fallback variables plus
-approval; access uses admin and operator roles; operators are restricted to
-assigned campaigns; auth uses short-lived bearer access tokens without token
-revocation
+**Clarifications**: Contacts are owned by the operator who created them; admins
+can access all contacts and campaigns; duplicate contacts use normalized email
+plus owning operator rejection, so different operators may store the same email
+address; existing local contact data without an owner can be dropped/recreated
+when implementing the ownership migration. EmailLabs performs placeholder
+replacement from form-encoded `sendmail_templates` variables supplied by Vercom;
+missing placeholder data uses fallback variables plus approval; access uses admin
+and operator roles; operators are restricted to assigned campaigns and their own
+contacts; auth uses short-lived bearer access tokens without token revocation
 
 ## Constitution Check
 
@@ -92,8 +96,9 @@ revocation
 - **Contract-Driven Security and Data Access**: PASS. OpenAPI plus AJV drives
   endpoint validation, Drizzle is the only persistence layer, and access
   restrictions are explicit.
-- **Operable, Containerized Systems**: PASS. API, frontend, worker, and database
-  run in separate containers; EmailLabs failures are recorded and surfaced.
+- **Operable, Containerized Systems**: PASS. API, frontend, worker, MCP server,
+  and database run in separate containers; EmailLabs failures are recorded and
+  surfaced.
 - **Pull Request and Commit Discipline**: PASS. Work is on feature branch
   `001-mailing-campaigns`; changes enter main only through owner-approved PRs.
 - **Clarification Discipline**: PASS. Owner answers are incorporated into
