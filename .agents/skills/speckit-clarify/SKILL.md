@@ -101,7 +101,6 @@ Execution steps:
 
    Edge Cases & Failure Handling:
    - Negative scenarios
-   - Rate limiting / throttling
    - Conflict resolution (e.g., concurrent edits)
 
    Constraints & Tradeoffs:

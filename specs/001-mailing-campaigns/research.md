@@ -57,24 +57,25 @@ record outcomes.
 minimal. External schedulers were rejected because the initial runtime should be
 portable with Docker Compose.
 
-## Decision: EmailLabs modern JSON REST API
+## Decision: EmailLabs `sendmail_templates` form endpoint
 
-**Rationale**: Current EmailLabs documentation describes a modern REST API using
-JSON, OpenAPI 3.0.2 documentation, and `Application-Key` plus `Authorization`
-keys. EmailLabs template sending accepts recipients and corresponding variables,
-then performs template substitution and sends personalized messages. This reduces
-Vercom responsibility for final placeholder rendering while keeping Vercom
-responsible for validating variables, approval, send state, and duplicate-send
-safety.
+**Rationale**: The owner-provided EmailLabs endpoint is
+`POST /api/sendmail_templates`. Its documentation defines
+`application/x-www-form-urlencoded` request fields, Basic authentication from the
+application key and secret key, `smtp_account`, `subject`, `from`,
+`template_id` or inline content, and recipient variables under
+`to[email][vars][name]`. EmailLabs performs template substitution and returns
+provider message IDs keyed by recipient email. The endpoint supports up to 200
+recipients in one `to` array, so Vercom must batch larger campaigns.
 
-**Alternatives considered**: The older `api/new_sendmail` form-encoded endpoint
-with Basic auth was rejected because it conflicts with the modern JSON API
-direction and would need different validation/mapping. Vercom-side placeholder
+**Alternatives considered**: A generic JSON payload with `Application-Key` and
+`Authorization` headers was rejected because it does not match the documented
+`sendmail_templates` endpoint requested by the owner. Vercom-side placeholder
 rendering was rejected because provider-side template rendering creates less
 application responsibility and matches EmailLabs template-send capabilities.
 
 **Sources**:
-- https://newpanel.docs.emaillabs.io/en/integrations/api
+- https://dev.emaillabs.io/pl/#api-Wysylka-sendmail_templates
 - https://emaillabs.io/produkt/emaile-transakcyjne/
 
 ## Decision: Separate backend, frontend, worker, and database containers

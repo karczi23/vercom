@@ -1,0 +1,52 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: vercom
+      POSTGRES_PASSWORD: vercom
+      POSTGRES_DB: vercom
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    env_file: .env
+    depends_on:
+      - db
+    ports:
+      - "4000:4000"
+    command: ["node", "backend/dist/src/api/server.js"]
+
+  worker:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    env_file: .env
+    depends_on:
+      - db
+    command: ["node", "backend/dist/src/worker/worker.js"]
+
+  mcp:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    env_file: .env
+    depends_on:
+      - db
+    command: ["node", "backend/dist/src/mcp/server.js"]
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+
+volumes:
+  db-data:

@@ -79,7 +79,6 @@
 - How does system handle [error scenario]?
 - What data, permission, or privacy boundary could be crossed accidentally?
 - What recovery path is available when a dependency or external system fails?
-- How is the 10 requests/minute rate limit surfaced to callers?
 - What asynchronous delivery or retry behavior is visible to users?
 
 ## Requirements *(mandatory)*
@@ -97,8 +96,7 @@
 - **FR-004**: System MUST [data requirement, e.g., "persist user preferences"]
 - **FR-005**: System MUST [behavior, e.g., "log all security events"]
 - **FR-006**: Every endpoint MUST validate input and output using rules derived from the OpenAPI specification
-- **FR-007**: API requests MUST be rate limited to 10 requests per minute per caller unless a stricter limit is specified
-- **FR-008**: External API failures MUST return a graceful result with actionable logging and no sensitive data leakage
+- **FR-007**: External API failures MUST return a graceful result with actionable logging and no sensitive data leakage
 
 *Example of marking unclear requirements:*
 
@@ -149,7 +147,6 @@
 - **Verification**: [Automated or manual validation expected for each story]
 - **OpenAPI/Validation**: [Endpoints affected, contract source, validation generation, or N/A]
 - **Data/Security**: [Data handled, authorization, ORM persistence, privacy constraints, or N/A]
-- **Rate Limiting**: [10 requests/minute behavior, stricter limit, or N/A]
 - **Async Communication**: [Async interaction model, delivery expectations, or N/A]
 - **External API Failure**: [Timeouts, fallback result, user-facing behavior, or N/A]
 - **Operations**: [Logging, configuration, containers, support, or documentation expectations]

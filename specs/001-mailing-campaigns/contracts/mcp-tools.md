@@ -1,32 +1,37 @@
 # MCP Tools Contract: Mailing Campaigns
 
-All MCP tools enforce the same authorization, validation, rate limiting, and
-operator campaign assignment rules as the HTTP API.
+All MCP tools enforce the same authorization, validation, operator contact
+ownership, and operator campaign assignment rules as the HTTP API.
 
 ## contacts.list
 
 Input: optional `query`, `limit`, `offset`.
 
-Output: paginated contacts with `id`, `email`, `name`, and validation status.
+Output: admins receive paginated contacts across operators; operators receive
+only their own contacts. Each contact includes `id`, `owningOperatorId`, `email`,
+`name`, and validation status.
 
 ## contacts.create
 
 Input: `email`, `name`, optional `personalizationData`.
 
-Output: created contact or validation error. Duplicate email returns a duplicate
-error and does not modify the existing contact.
+Output: created contact owned by the authenticated operator, or validation
+error. Duplicate email for the same operator returns a duplicate error and does
+not modify the existing contact; the same email may exist for another operator.
 
 ## contacts.update
 
 Input: `id`, editable contact fields.
 
-Output: updated contact or validation/authorization error.
+Output: updated contact or validation/authorization error. Operators can update
+only their own contacts.
 
 ## contacts.delete
 
 Input: `id`.
 
-Output: deletion confirmation or validation/authorization error.
+Output: deletion confirmation or validation/authorization error. Operators can
+delete only their own contacts.
 
 ## campaigns.list
 
@@ -52,8 +57,9 @@ update assigned draft campaigns.
 Input: `id`, selected contact IDs.
 
 Output: variable validation entries, fallback usage, missing data warnings, and
-send-readiness approval requirement. EmailLabs performs final placeholder
-replacement when sent.
+send-readiness approval requirement. Operators can select only contacts they own;
+admins can select any contact. EmailLabs performs final placeholder replacement
+when sent.
 
 ## campaigns.send
 
