@@ -29,13 +29,16 @@ a test campaign.
 5. Select an editor/operator from the assigned-editor selector.
 6. Confirm the campaign list only shows campaigns assigned to the selected
    editor.
-7. Open the campaign editor for one listed assigned draft campaign.
-8. Enter a topic.
-9. Enter body content containing `{{ Name }}` and another placeholder such as
+7. Create a campaign using the rich-text editor in the campaign creation flow.
+8. Confirm the create flow exposes the same bold, italic, heading, font,
+   placeholder, and preview behavior as editing.
+9. Open the campaign editor for one listed assigned draft campaign.
+10. Enter a topic.
+11. Enter body content containing `{{ Name }}` and another placeholder such as
    `{{ company }}`.
-10. Use the toolbar to apply bold, italic, headings 1-6, and each approved font.
-11. Save the draft, reopen it, and confirm formatting and placeholders remain.
-12. Run unit tests for auth-triggered reload, assigned campaign selection,
+12. Use the toolbar to apply bold, italic, headings 1-6, and each approved font.
+13. Save the draft, reopen it, and confirm formatting and placeholders remain.
+14. Run unit tests for rich-text campaign creation, auth-triggered reload, assigned campaign selection,
    placeholder extraction,
    editor DTO validation, and draft
    save service behavior.

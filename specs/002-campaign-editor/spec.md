@@ -53,6 +53,10 @@ operator-authored HTML.
    contacts or campaigns return an unauthorized response, **When** the user logs
    in successfully, **Then** the page reloads protected contacts and campaigns
    automatically and existing assigned campaigns become visible for editing.
+8. **Given** an operator creates a new campaign, **When** they enter campaign
+   content, **Then** the creation flow uses the same rich-text editor, toolbar
+   controls, placeholder preservation, and preview behavior as editing an
+   existing campaign.
 
 ---
 
@@ -139,6 +143,8 @@ same campaign, while unsent or failed recipients remain visible for safe recover
 
 - **FR-001**: The system MUST provide a CMS-like campaign editor screen in the
   frontend application for operators.
+- **FR-001e**: Creating a campaign MUST use the same rich-text editor controls,
+  placeholder handling, and preview behavior as editing an existing campaign.
 - **FR-001a**: The main campaign page MUST allow users to select an editor and
   view campaigns assigned to that editor.
 - **FR-001b**: Non-admin operators MUST only be able to select themselves as the

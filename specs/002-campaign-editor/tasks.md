@@ -202,6 +202,19 @@ when their first page-load requests failed with 401 before authentication.
 
 ---
 
+## Phase 9: Rich Text Campaign Creation
+
+**Purpose**: Ensure new campaign creation uses the same rich-text editor
+experience as editing existing campaigns.
+
+- [X] T085 [P] [US1] Add frontend unit coverage for rich-text campaign creation controls in `frontend/tests/unit/campaigns/CampaignEditor.test.tsx`
+- [X] T086 [US1] Replace the plain create-campaign textarea with the shared rich-text editor toolbar and `pell` wrapper in `frontend/src/campaigns/CampaignForm.tsx`
+- [X] T087 [US1] Show create-campaign preview and placeholder detection using the same preview component as editing in `frontend/src/campaigns/CampaignForm.tsx`
+- [X] T088 [US1] Scope toolbar command reads to the active editor instance so creation and editing editors do not interfere in `frontend/src/campaigns/CampaignForm.tsx` and `frontend/src/campaign-editor/CampaignEditorPage.tsx`
+- [X] T089 [US1] Update quickstart validation notes for rich-text campaign creation in `specs/002-campaign-editor/quickstart.md`
+
+---
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies

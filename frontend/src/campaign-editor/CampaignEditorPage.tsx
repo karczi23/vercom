@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ApiClient } from '../api/client.js';
 import { createCampaignEditorApi } from './campaignEditorApi.js';
 import { CampaignEditorToolbar } from './CampaignEditorToolbar.js';
@@ -22,6 +22,7 @@ export function CampaignEditorPage({ campaignId, client }: CampaignEditorPagePro
   const [outcomes, setOutcomes] = useState<SendOutcomeList>({ items: [] });
   const [forceContactId, setForceContactId] = useState<string>();
   const [message, setMessage] = useState<string>();
+  const editorRootRef = useRef<HTMLDivElement>(null);
 
   async function load() {
     const loaded = await api.getDraft(campaignId);
@@ -49,7 +50,7 @@ export function CampaignEditorPage({ campaignId, client }: CampaignEditorPagePro
 
   function command(name: string, value?: string) {
     document.execCommand(name, false, value);
-    setContent(document.querySelector('.pell-content')?.innerHTML ?? content);
+    setContent(editorRootRef.current?.querySelector('.pell-content')?.innerHTML ?? content);
   }
 
   return (
@@ -70,7 +71,7 @@ export function CampaignEditorPage({ campaignId, client }: CampaignEditorPagePro
         Topic
         <input className="rounded-md border border-slate-300 px-3 py-2 text-base font-normal text-slate-950" value={topic} onChange={event => setTopic(event.target.value)} />
       </label>
-      <div className="overflow-hidden rounded-md border border-slate-300">
+      <div ref={editorRootRef} className="overflow-hidden rounded-md border border-slate-300">
         <CampaignEditorToolbar
           onBold={() => command('bold')}
           onItalic={() => command('italic')}
