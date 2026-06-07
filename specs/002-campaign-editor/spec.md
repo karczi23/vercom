@@ -219,8 +219,8 @@ same campaign, while unsent or failed recipients remain visible for safe recover
 - **Data/Security**: Direct HTML authoring is forbidden; pasted or typed HTML is
   sanitized and treated as plain text. Toolbar-generated formatting uses only
   approved HTML. Operator campaign assignment restrictions remain mandatory.
-- **Rate Limiting**: Existing 10 requests/minute API rate limiting applies to
-  editor save, preview, send, and recovery requests.
+- **Rate Limiting**: Campaign editor endpoints do not add feature-specific rate
+  limiting.
 - **Async Communication**: Send and recovery actions remain asynchronous and are
   driven by per-recipient send state.
 - **External API Failure**: Partial and uncertain provider outcomes must never

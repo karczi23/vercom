@@ -45,7 +45,7 @@ reuse, and OpenAPI delta registration before user-story work.
 - [X] T015 Implement strict HTML allowlist constants for editor content in `backend/src/campaign-editor/editorAllowlist.ts`
 - [X] T016 Implement frontend campaign editor API client methods in `frontend/src/campaign-editor/campaignEditorApi.ts`
 - [X] T017 Implement campaign editor route registration in `backend/src/campaign-editor/editor.controller.ts`
-- [X] T018 Register campaign editor HTTP routes and 10 requests/minute rate limiting in `backend/src/api/routes.ts`
+- [X] T018 Register campaign editor HTTP routes in `backend/src/api/routes.ts`
 
 **Checkpoint**: Editor foundation is ready. User story implementation can now
 proceed.
@@ -162,7 +162,7 @@ recovery is duplicate-safe and force resend is explicit.
 
 - [X] T062 [P] Update campaign editor implementation notes in `README.md`
 - [X] T063 Confirm every campaign editor endpoint uses OpenAPI-derived validation in `backend/src/api/routes.ts`
-- [X] T064 Confirm 10 requests/minute rate limiting applies to editor endpoints in `backend/src/api/routes.ts`
+- [X] T064 Confirm campaign editor endpoints add no feature-specific rate limiting in `backend/src/campaign-editor/editor.controller.ts`
 - [X] T065 Confirm assigned-operator restrictions apply to editor, preview, validate, outcome, and force-resend actions in `backend/src/campaign-editor/editorAuthorization.ts`
 - [X] T066 Confirm no direct SQL invocations exist in campaign editor code outside Drizzle migration/tooling files in `backend/src/campaign-editor/editorRepository.ts`
 - [X] T067 Confirm no EmailLabs request is made during editor save, preview, validation, send outcome, or force resend HTTP handling in `backend/src/campaign-editor/send-recovery.service.ts`

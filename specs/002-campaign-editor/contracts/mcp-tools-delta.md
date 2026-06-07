@@ -1,8 +1,7 @@
 # MCP Tools Delta: Campaign Editor
 
 These tools extend the feature-001 MCP server. They must reuse the same
-OpenAPI-derived validation, authorization, rate limiting, and audit behavior as
-the HTTP API.
+OpenAPI-derived validation, authorization, and audit behavior as the HTTP API.
 
 ## `campaign_editor_get_draft`
 

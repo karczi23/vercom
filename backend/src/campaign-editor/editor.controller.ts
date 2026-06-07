@@ -1,4 +1,4 @@
-import { Router as createRouter, type RequestHandler } from 'express';
+import { Router as createRouter } from 'express';
 import { validateOpenApi } from '../api/openapiMiddleware.js';
 import { CampaignRepository } from '../campaigns/campaignRepository.js';
 import type { Database } from '../db/client.js';
@@ -8,9 +8,6 @@ import { EditorService } from './editor.service.js';
 export function createCampaignEditorRoutes(db: Database) {
   const router = createRouter();
   const service = new EditorService(db, new CampaignRepository(db), new EditorRepository(db));
-  const limitEditorRequests = createRateLimiter(10, 60_000);
-
-  router.use('/campaigns/:campaignId', limitEditorRequests);
 
   router.get('/campaigns/:campaignId/editor', validateOpenApi('/campaigns/{campaignId}/editor', 'get'), async (req, res, next) => {
     try {
@@ -61,24 +58,4 @@ export function createCampaignEditorRoutes(db: Database) {
   });
 
   return router;
-}
-
-function createRateLimiter(maxRequests: number, windowMs: number): RequestHandler {
-  const buckets = new Map<string, { count: number; resetAt: number }>();
-  return (req, res, next) => {
-    const now = Date.now();
-    const key = `${req.user?.id ?? req.ip}:${req.params.campaignId}`;
-    const bucket = buckets.get(key);
-    if (!bucket || bucket.resetAt <= now) {
-      buckets.set(key, { count: 1, resetAt: now + windowMs });
-      next();
-      return;
-    }
-    if (bucket.count >= maxRequests) {
-      res.status(429).json({ error: { code: 'rate_limited', message: 'Too many campaign editor requests' } });
-      return;
-    }
-    bucket.count += 1;
-    next();
-  };
 }

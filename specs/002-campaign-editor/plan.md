@@ -57,8 +57,7 @@ future editor extension are out of scope.
 response schemas from OpenAPI with AJV. The delta extends the mailing campaigns
 contract from feature 001 without redefining the full API.
 
-**Rate Limits**: 10 requests per minute per caller for editor save, validate,
-preview, outcome, and force-resend endpoints; stricter limits are not required.
+**Rate Limits**: No feature-specific campaign editor rate limit is added.
 
 **Async Communication**: Frontend and MCP/API calls use HTTP request/response as
 the required protocol boundary for editor save, validation, preview, and status
@@ -97,9 +96,8 @@ recipients after acknowledging possible duplication.
   contract tests; browser-specific editor behavior is covered by quickstart
   validation because no integration test suite is planned.
 - **Contract-Driven Security and Data Access**: PASS. OpenAPI plus AJV drives
-  endpoint validation, 10/minute rate limiting applies, Drizzle is the only
-  persistence layer, operator assignment checks protect campaign ownership, and
-  sanitization is explicit.
+  endpoint validation, Drizzle is the only persistence layer, operator
+  assignment checks protect campaign ownership, and sanitization is explicit.
 - **Operable, Containerized Systems**: PASS. API, frontend, worker, MCP server,
   and database run separately; send failures and uncertain outcomes are visible
   without logs; external provider failures are recorded without leaking secrets.

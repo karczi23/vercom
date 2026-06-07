@@ -5,7 +5,7 @@ info:
   description: >
     Feature-002 API deltas for the campaign editor. This contract extends the
     feature-001 mailing campaigns API and intentionally does not redefine base
-    auth, contact, campaign CRUD, rate-limit, or send job contracts.
+    auth, contact, campaign CRUD, or send job contracts.
 servers:
   - url: /api
 security:

@@ -1,9 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { createOpenApiValidators } from '../../src/api/openapi-validation/openapiValidator.js';
-import { loadMergedOpenApiDocument } from '../../src/api/openapi-validation/campaignEditorValidation.js';
 
 describe('campaign editor recovery contract', () => {
-  const validators = createOpenApiValidators(loadMergedOpenApiDocument());
+  const validators = createOpenApiValidators();
 
   it('validates placeholder validation and outcome responses', () => {
     expect(validators.getOperation('/campaigns/{campaignId}/editor/validate', 'post').validateResponseBody?.({

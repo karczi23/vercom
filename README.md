@@ -46,6 +46,5 @@ Editor content is sanitized on the frontend preview path and again on the
 backend before persistence. Allowed HTML is limited to paragraphs, headings,
 bold, italic, line breaks, and approved font-family spans. All editor, preview,
 validation, outcome, and force-resend endpoints reuse campaign assignment
-authorization and a 10 requests/minute limiter. Force resend creates queued
-worker work and an acknowledgement record; the HTTP and MCP paths do not call
-EmailLabs inline.
+authorization. Force resend creates queued worker work and an acknowledgement
+record; the HTTP and MCP paths do not call EmailLabs inline.

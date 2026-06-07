@@ -1,10 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { createOpenApiValidators } from '../../src/api/openapi-validation/openapiValidator.js';
-import { loadMergedOpenApiDocument } from '../../src/api/openapi-validation/campaignEditorValidation.js';
 
 describe('campaign editor draft contract', () => {
   it('validates get and save draft response bodies', () => {
-    const validators = createOpenApiValidators(loadMergedOpenApiDocument());
+    const validators = createOpenApiValidators();
     const draft = {
       campaignId: 'campaign-1',
       topic: 'Topic',

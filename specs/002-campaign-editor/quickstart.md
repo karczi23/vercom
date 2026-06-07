@@ -79,7 +79,6 @@ Required contract coverage:
 ## Manual Non-Regression Checks
 
 - Operators cannot access another operator's campaign editor.
-- The 10 requests/minute rate limit applies to editor endpoints.
 - MCP tools expose the same authorization and validation behavior as HTTP.
 - No EmailLabs request is made during editor save, preview, validation, or force
   resend HTTP handling; sends happen through queued worker jobs.
@@ -91,8 +90,8 @@ Recorded on 2026-06-07:
 - `npm run typecheck`: PASS
 - `npm run test`: PASS, 37 test files and 56 tests
 - `npm run build`: PASS
-- Source checks: PASS for OpenAPI-derived editor validation, 10/minute editor
-  rate limiting, assigned-operator authorization, no direct SQL in
+- Source checks: PASS for OpenAPI-derived editor validation through the shared
+  OpenAPI document, assigned-operator authorization, no direct SQL in
   `backend/src/campaign-editor`, and no EmailLabs call in editor/recovery HTTP or
   MCP code paths.
 
