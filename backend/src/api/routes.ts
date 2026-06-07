@@ -6,12 +6,13 @@ import type { AppContext } from './app.js';
 import { createContactRoutes } from '../contacts/contactRoutes.js';
 import { createCampaignRoutes } from '../campaigns/campaignRoutes.js';
 import { createSendRoutes } from '../campaigns/sendRoutes.js';
+import { validateOpenApi } from './openapiMiddleware.js';
 
 export function registerRoutes(app: Express, context: AppContext): void {
   const authService = new AuthService(context.db);
 
   app.get('/health', (_req, res) => res.json({ ok: true }));
-  app.post('/api/auth/login', async (req, res) => {
+  app.post('/api/auth/login', validateOpenApi('/auth/login', 'post'), async (req, res) => {
     const user = await authService.login(String(req.body?.username ?? ''), String(req.body?.password ?? ''));
     res.json(signAccessToken(user, context.config.authTokenSecret));
   });

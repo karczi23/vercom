@@ -1,4 +1,5 @@
 import { Router as createRouter } from 'express';
+import { validateOpenApi } from '../api/openapiMiddleware.js';
 import { canAccessCampaign } from '../auth/authorization.js';
 import { forbidden } from '../common/apiErrors.js';
 import type { Database } from '../db/client.js';
@@ -14,18 +15,20 @@ export function createSendRoutes(db: Database) {
   const attemptRepository = new SendAttemptRepository(db);
   const queue = new SendQueueService(campaignRepository, jobRepository);
 
-  router.post('/campaigns/:campaignId/send', async (req, res, next) => {
+  router.post('/campaigns/:campaignId/send', validateOpenApi('/campaigns/{campaignId}/send', 'post', '202'), async (req, res, next) => {
     try {
-      if (!(await canAccessCampaign(db, req.user!, req.params.campaignId))) throw forbidden('Caller cannot access this campaign');
-      res.status(202).json(await queue.queueCampaign(req.params.campaignId));
+      const campaignId = String(req.params.campaignId);
+      if (!(await canAccessCampaign(db, req.user!, campaignId))) throw forbidden('Caller cannot access this campaign');
+      res.status(202).json(await queue.queueCampaign(campaignId));
     } catch (error) {
       next(error);
     }
   });
-  router.get('/campaigns/:campaignId/send-attempts', async (req, res, next) => {
+  router.get('/campaigns/:campaignId/send-attempts', validateOpenApi('/campaigns/{campaignId}/send-attempts', 'get'), async (req, res, next) => {
     try {
-      if (!(await canAccessCampaign(db, req.user!, req.params.campaignId))) throw forbidden('Caller cannot access this campaign');
-      res.json({ items: await attemptRepository.listForCampaign(req.params.campaignId) });
+      const campaignId = String(req.params.campaignId);
+      if (!(await canAccessCampaign(db, req.user!, campaignId))) throw forbidden('Caller cannot access this campaign');
+      res.json({ items: await attemptRepository.listForCampaign(campaignId) });
     } catch (error) {
       next(error);
     }

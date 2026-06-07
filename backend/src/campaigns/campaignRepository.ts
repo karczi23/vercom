@@ -51,4 +51,8 @@ export class CampaignRepository {
   async approveVariables(id: string, approved: boolean): Promise<void> {
     await this.db.update(campaigns).set({ variableValidationApproved: approved, status: approved ? 'ready' : 'draft' }).where(eq(campaigns.id, id));
   }
+
+  async markStatus(id: string, status: Campaign['status']): Promise<void> {
+    await this.db.update(campaigns).set({ status, updatedAt: new Date() }).where(eq(campaigns.id, id));
+  }
 }

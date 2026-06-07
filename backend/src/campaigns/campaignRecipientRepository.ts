@@ -45,4 +45,15 @@ export class CampaignRecipientRepository {
       })
       .where(and(eq(campaignRecipients.campaignId, campaignId), eq(campaignRecipients.contactId, contactId)));
   }
+
+  async updateSendOutcome(campaignId: string, contactId: string, sendStatus: typeof campaignRecipients.$inferSelect.sendStatus, providerMessageId?: string): Promise<void> {
+    await this.db
+      .update(campaignRecipients)
+      .set({
+        sendStatus,
+        providerMessageId,
+        updatedAt: new Date()
+      })
+      .where(and(eq(campaignRecipients.campaignId, campaignId), eq(campaignRecipients.contactId, contactId)));
+  }
 }

@@ -1,6 +1,6 @@
 import type { AuthenticatedUser } from '@vercom/common/types/shared';
 import type { Campaign } from '@vercom/common/types/mailing-campaigns';
-import { forbidden, notFound } from '../common/apiErrors.js';
+import { ApiError, forbidden, notFound } from '../common/apiErrors.js';
 import { canAccessCampaign } from '../auth/authorization.js';
 import type { Database } from '../db/client.js';
 import { validateCampaignInput } from './campaignValidation.js';
@@ -32,19 +32,22 @@ export class CampaignService {
   }
 
   async update(user: AuthenticatedUser, id: string, raw: unknown): Promise<Campaign> {
-    await this.ensureAccess(user, id);
+    const campaign = await this.get(user, id);
+    this.requireDraft(campaign);
     const updated = await this.campaigns.update(id, validateCampaignInput(raw));
     if (!updated) throw notFound('Campaign was not found');
     return updated;
   }
 
   async delete(user: AuthenticatedUser, id: string): Promise<void> {
-    await this.ensureAccess(user, id);
+    const campaign = await this.get(user, id);
+    this.requireDraft(campaign);
     if (!(await this.campaigns.delete(id))) throw notFound('Campaign was not found');
   }
 
   async replaceRecipients(user: AuthenticatedUser, campaignId: string, contactIds: string[]): Promise<void> {
-    await this.ensureAccess(user, campaignId);
+    const campaign = await this.get(user, campaignId);
+    this.requireDraft(campaign);
     const uniqueContactIds = [...new Set(contactIds)];
     const accessibleContactCount = await this.recipients.countAccessibleContacts(user, uniqueContactIds);
     if (accessibleContactCount !== uniqueContactIds.length) {
@@ -68,6 +71,12 @@ export class CampaignService {
   private async ensureAccess(user: AuthenticatedUser, campaignId: string): Promise<void> {
     if (!(await canAccessCampaign(this.db, user, campaignId))) {
       throw forbidden('Caller cannot access this campaign');
+    }
+  }
+
+  private requireDraft(campaign: Campaign): void {
+    if (campaign.status !== 'draft') {
+      throw new ApiError(409, 'campaign_not_editable', 'Only draft campaigns can be modified');
     }
   }
 }
