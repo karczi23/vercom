@@ -20,13 +20,18 @@ a test campaign.
 
 ## Validate User Story 1: Compose Campaign Content
 
-1. Open the campaign editor for an assigned draft campaign.
-2. Enter a topic.
-3. Enter body content containing `{{ Name }}` and another placeholder such as
+1. Open the main campaign page.
+2. Select an editor/operator from the assigned-editor selector.
+3. Confirm the campaign list only shows campaigns assigned to the selected
+   editor.
+4. Open the campaign editor for one listed assigned draft campaign.
+5. Enter a topic.
+6. Enter body content containing `{{ Name }}` and another placeholder such as
    `{{ company }}`.
-4. Use the toolbar to apply bold, italic, headings 1-6, and each approved font.
-5. Save the draft, reopen it, and confirm formatting and placeholders remain.
-6. Run unit tests for placeholder extraction, editor DTO validation, and draft
+7. Use the toolbar to apply bold, italic, headings 1-6, and each approved font.
+8. Save the draft, reopen it, and confirm formatting and placeholders remain.
+9. Run unit tests for assigned campaign selection, placeholder extraction,
+   editor DTO validation, and draft
    save service behavior.
 
 Expected result: the draft stores one sanitized `templateContent` value with

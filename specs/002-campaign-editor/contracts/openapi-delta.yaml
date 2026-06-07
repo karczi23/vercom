@@ -11,6 +11,18 @@ servers:
 security:
   - bearerAuth: []
 paths:
+  /campaigns:
+    get:
+      summary: List campaigns, optionally filtered by assigned editor
+      parameters:
+        - name: assignedEditorId
+          in: query
+          schema:
+            type: string
+          description: Restricts returned campaigns to the selected editor/operator assignment.
+      responses:
+        '200':
+          description: Campaigns visible to the caller and assigned to the selected editor when provided
   /campaigns/{campaignId}/editor:
     get:
       summary: Get campaign editor draft

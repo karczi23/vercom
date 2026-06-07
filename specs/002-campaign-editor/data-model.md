@@ -22,6 +22,26 @@ screen.
 operator restriction from `Campaign.assignedOperatorId` applies to every editor
 action.
 
+## EditorAssignmentFilter
+
+**Purpose**: Represents the main campaign page selection used to choose which
+editor/operator's campaigns are visible and selectable before opening a campaign
+editor.
+
+**Fields**: `selectedEditorId`, `availableEditors`, `campaigns`, `callerRole`.
+
+**Validation**:
+- Non-admin operators can only use their own user id as `selectedEditorId`.
+- Admins can select any editor that has campaign assignments visible to the
+  admin.
+- Campaigns shown for a selected editor must all have
+  `assignedOperatorId === selectedEditorId`.
+- If no campaigns exist for the selected editor, the page shows an empty state
+  and does not auto-select a different campaign.
+
+**Relationships**: Filters the existing `Campaign` entity by
+`assignedOperatorId` before the `CampaignEditorDraft` is opened.
+
 ## EditorContent
 
 **Purpose**: The sanitized campaign body produced by toolbar-controlled rich text
