@@ -31,3 +31,15 @@ export function validateCampaignInput(raw: unknown): CampaignInput {
     assignedOperatorId: input.assignedOperatorId!
   };
 }
+
+export function validateCampaignUpdateInput(current: CampaignInput, raw: unknown): CampaignInput {
+  if (!raw || typeof raw !== 'object') {
+    throw validationError('Campaign input must be an object');
+  }
+  const patch = raw as Partial<CampaignInput>;
+  return validateCampaignInput({
+    ...current,
+    ...patch,
+    fallbackVariables: patch.fallbackVariables ?? current.fallbackVariables
+  });
+}

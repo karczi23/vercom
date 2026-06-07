@@ -3,7 +3,7 @@ import type { Campaign } from '@vercom/common/types/mailing-campaigns';
 import { ApiError, forbidden, notFound } from '../common/apiErrors.js';
 import { canAccessCampaign } from '../auth/authorization.js';
 import type { Database } from '../db/client.js';
-import { validateCampaignInput } from './campaignValidation.js';
+import { validateCampaignInput, validateCampaignUpdateInput } from './campaignValidation.js';
 import type { CampaignRepository } from './campaignRepository.js';
 import type { CampaignRecipientRepository } from './campaignRecipientRepository.js';
 import { validateRecipientVariables } from './variableValidationService.js';
@@ -34,7 +34,7 @@ export class CampaignService {
   async update(user: AuthenticatedUser, id: string, raw: unknown): Promise<Campaign> {
     const campaign = await this.get(user, id);
     this.requireDraft(campaign);
-    const updated = await this.campaigns.update(id, validateCampaignInput(raw));
+    const updated = await this.campaigns.update(id, validateCampaignUpdateInput(campaign, raw));
     if (!updated) throw notFound('Campaign was not found');
     return updated;
   }
@@ -42,6 +42,7 @@ export class CampaignService {
   async delete(user: AuthenticatedUser, id: string): Promise<void> {
     const campaign = await this.get(user, id);
     this.requireDraft(campaign);
+    await this.recipients.deleteRecipients(id);
     if (!(await this.campaigns.delete(id))) throw notFound('Campaign was not found');
   }
 

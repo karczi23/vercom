@@ -149,7 +149,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CampaignInput'
+              $ref: '#/components/schemas/CampaignUpdateInput'
       responses:
         '200':
           description: Updated campaign
@@ -329,6 +329,25 @@ components:
     CampaignInput:
       type: object
       required: [name, subject, templateContent, fallbackVariables, assignedOperatorId]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        subject:
+          type: string
+          minLength: 1
+        templateContent:
+          type: string
+        emailLabsTemplateId:
+          type: string
+        fallbackVariables:
+          type: object
+          additionalProperties:
+            type: string
+        assignedOperatorId:
+          type: string
+    CampaignUpdateInput:
+      type: object
       properties:
         name:
           type: string

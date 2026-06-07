@@ -7,6 +7,8 @@ describe('placeholder service', () => {
   });
 
   it('detects unsupported placeholders', () => {
+    expect(findUnsupportedPlaceholders('Hello {{ Name }} from {{company}}')).toEqual([]);
     expect(findUnsupportedPlaceholders('Hello {Name}')).toEqual(['{Name}']);
+    expect(findUnsupportedPlaceholders('Hello {{ missing')).toEqual(['{{ missing']);
   });
 });

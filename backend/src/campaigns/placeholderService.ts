@@ -1,5 +1,6 @@
 const supportedPlaceholderPattern = /\{\{\s*([A-Za-z0-9_.-]+)\s*\}\}/g;
-const anyBracePattern = /\{[^{}]*\}|\{\{[^{}]*$/g;
+const unsupportedDoubleBracePattern = /\{\{[^{}]*$/g;
+const singleBracePattern = /\{(?!\{)[^{}]*\}/g;
 
 export function extractPlaceholders(templateContent: string): string[] {
   const names = new Set<string>();
@@ -10,8 +11,9 @@ export function extractPlaceholders(templateContent: string): string[] {
 }
 
 export function findUnsupportedPlaceholders(templateContent: string): string[] {
-  const supported = new Set([...templateContent.matchAll(supportedPlaceholderPattern)].map(match => match[0]));
-  return [...templateContent.matchAll(anyBracePattern)]
-    .map(match => match[0])
-    .filter(token => !supported.has(token));
+  const withoutSupported = templateContent.replace(supportedPlaceholderPattern, '');
+  return [
+    ...[...withoutSupported.matchAll(singleBracePattern)].map(match => match[0]),
+    ...[...withoutSupported.matchAll(unsupportedDoubleBracePattern)].map(match => match[0])
+  ];
 }

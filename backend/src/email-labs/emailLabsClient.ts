@@ -24,7 +24,20 @@ export class EmailLabsClient {
     const batches = chunk(payload.recipients, 200);
     const results: EmailLabsResult[] = [];
 
-    for (const recipients of batches) {
+    logger.info('EmailLabs send started', {
+      recipientCount: payload.recipients.length,
+      batchCount: batches.length,
+      smtpAccount: payload.smtpAccount,
+      from: payload.from,
+      hasTemplateId: Boolean(payload.templateId)
+    });
+
+    for (const [index, recipients] of batches.entries()) {
+      logger.info('EmailLabs batch submit started', {
+        batchNumber: index + 1,
+        batchCount: batches.length,
+        recipientCount: recipients.length
+      });
       results.push(await this.sendBatch({ ...payload, recipients }));
     }
 
@@ -56,6 +69,15 @@ export class EmailLabsClient {
       if (lastResult.status === 'submitted' || (lastResult.statusCode && lastResult.statusCode < 500)) {
         return lastResult;
       }
+      if (attempt < maxRetries) {
+        logger.warn('EmailLabs batch will retry', {
+          attempt: attempt + 1,
+          maxRetries,
+          status: lastResult.status,
+          statusCode: lastResult.statusCode,
+          summary: lastResult.summary
+        });
+      }
     }
     return lastResult ?? { status: 'failed', summary: 'EmailLabs request failed before submission' };
   }
@@ -75,8 +97,17 @@ export class EmailLabsClient {
       });
       const summary = redactSecrets(await response.text());
       if (!response.ok) {
+        logger.warn('EmailLabs batch rejected', {
+          statusCode: response.status,
+          summary
+        });
         return { status: 'failed', statusCode: response.status, summary };
       }
+      logger.info('EmailLabs batch submitted', {
+        statusCode: response.status,
+        requestId: response.headers.get('x-request-id') ?? undefined,
+        summary
+      });
       return {
         status: 'submitted',
         statusCode: response.status,

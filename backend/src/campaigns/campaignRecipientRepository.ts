@@ -12,6 +12,10 @@ export class CampaignRecipientRepository {
     await this.db.insert(campaignRecipients).values(contactIds.map(contactId => ({ campaignId, contactId })));
   }
 
+  async deleteRecipients(campaignId: string): Promise<void> {
+    await this.db.delete(campaignRecipients).where(eq(campaignRecipients.campaignId, campaignId));
+  }
+
   async countAccessibleContacts(user: AuthenticatedUser, contactIds: string[]): Promise<number> {
     const uniqueIds = [...new Set(contactIds)];
     if (uniqueIds.length === 0) return 0;
