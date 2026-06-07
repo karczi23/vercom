@@ -110,6 +110,26 @@ paths:
                 $ref: '#/components/schemas/SendOutcomeList'
         '403':
           $ref: '#/components/responses/Forbidden'
+  /campaigns/{campaignId}/retry-failed:
+    post:
+      summary: Queue a safe retry for failed campaign recipients
+      parameters:
+        - $ref: '#/components/parameters/CampaignId'
+      responses:
+        '202':
+          description: Failed-recipient retry job queued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetryFailedResponse'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          description: Campaign has no failed recipients to retry
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /campaigns/{campaignId}/recipients/{contactId}/force-resend:
     post:
       summary: Force resend for an uncertain recipient after duplicate-risk acknowledgement
@@ -280,6 +300,7 @@ components:
         - sendStatus
         - requiresReview
         - forceResendAllowed
+        - retryFailedAllowed
       properties:
         campaignId:
           type: string
@@ -305,6 +326,8 @@ components:
           type: boolean
         forceResendAllowed:
           type: boolean
+        retryFailedAllowed:
+          type: boolean
     ForceResendRequest:
       type: object
       required: [acknowledgedDuplicateRisk]
@@ -329,6 +352,17 @@ components:
         status:
           type: string
           enum: [force_resend_queued]
+    RetryFailedResponse:
+      type: object
+      required: [campaignId, sendJobId, status]
+      properties:
+        campaignId:
+          type: string
+        sendJobId:
+          type: string
+        status:
+          type: string
+          enum: [retry_failed_queued]
     ErrorResponse:
       type: object
       required: [error]

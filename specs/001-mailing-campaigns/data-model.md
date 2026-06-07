@@ -38,6 +38,9 @@ such as contact name and email come from first-class contact fields, not from
 belong to many campaign recipient rows. Admins can access all contacts;
 operators can access only their own contacts.
 
+**UI Management**: Operators can create and edit contact `personalizationData`
+key-value variables in the Contacts UI.
+
 ## Campaign
 
 **Purpose**: Stores one campaign template body, personalization settings, and
@@ -47,12 +50,17 @@ access scope.
 `emailLabsTemplateId`, `status`, `assignedOperatorId`, `createdByUserId`,
 `createdAt`, `updatedAt`.
 
-**Validation**: `name`, `subject`, and `templateContent` are required. There is
-one campaign body format in the application model. Unsupported placeholders are
-rejected. Missing placeholder values use fallback variables and require variable
-validation approval before send. Vercom does not store per-recipient rendered
-bodies by default; EmailLabs performs final placeholder replacement from
-form-encoded `to[email][vars]` fields.
+**Validation**: `name`, `subject`, and `templateContent` are required.
+`assignedOperatorId` is inferred from the authenticated operator during
+creation. There is one campaign body format in the application model.
+Unsupported placeholders are rejected. Missing placeholder values use fallback
+variables and require variable validation approval before send. Vercom does not
+store per-recipient rendered bodies by default; EmailLabs performs final
+placeholder replacement from form-encoded `to[email][vars]` fields.
+
+**Fallback Variables**: Operators manage campaign-level fallback variables in
+the campaign setup UI. Fallbacks satisfy placeholders when a selected recipient
+does not have a contact-specific value.
 
 **States**: `draft` -> `ready` -> `sending` -> `sent` or `failed`. Drafts can be
 edited; sending and sent campaigns are immutable except status/outcome fields.
@@ -69,6 +77,9 @@ state.
 **Validation**: A campaign-contact pair is unique. Rendering records missing data
 and fallback usage are validation metadata only; full rendered message bodies are
 not duplicated into this table.
+
+**Selection**: Draft campaign recipient selection is managed in the campaign
+setup UI and persisted through `/campaigns/{campaignId}/recipients`.
 
 ## SendJob
 

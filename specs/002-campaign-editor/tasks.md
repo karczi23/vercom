@@ -150,6 +150,7 @@ confirm force resend works only for uncertain recipients with acknowledgement.
 - [X] T059 [US3] Implement force resend acknowledgement UI in `frontend/src/campaign-editor/ForceResendDialog.tsx`
 - [X] T060 [US3] Implement MCP campaign editor tools in `backend/src/mcp/campaignEditorTools.ts`
 - [X] T061 [US3] Register MCP campaign editor tools in `backend/src/mcp/server.ts`
+- [X] T085 [US3] Add safe retry action for failed recipients across OpenAPI, editor UI, recovery service, worker filtering, and MCP tools
 
 **Checkpoint**: All user stories are independently functional; automatic
 recovery is duplicate-safe and force resend is explicit.

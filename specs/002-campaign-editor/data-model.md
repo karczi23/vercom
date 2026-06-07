@@ -89,7 +89,7 @@ recipient variables.
 
 **Fields**: `campaignId`, `contactId`, `contactEmail`, `contactName`,
 `sendStatus`, `providerMessageId`, `lastAttemptAt`, `failureReason`,
-`requiresReview`, `forceResendAllowed`.
+`requiresReview`, `forceResendAllowed`, `retryFailedAllowed`.
 
 **States**:
 - `pending`: recipient has not been submitted yet.
@@ -103,6 +103,8 @@ recipient variables.
 **Validation**:
 - Automatic recovery can target only recipients that are safe to send without
   duplication.
+- `failed` recipients expose `retryFailedAllowed` and can be queued for retry
+  without duplicate-risk acknowledgement.
 - `submitted` and `uncertain` recipients are never automatically sent again.
 - `uncertain` recipients can be force-resent only by the assigned operator after
   explicit acknowledgement.
