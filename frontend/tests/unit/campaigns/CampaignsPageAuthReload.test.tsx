@@ -22,6 +22,12 @@ describe('CampaignsPage auth reload', () => {
       if (path === '/campaigns?assignedEditorId=operator-1') {
         return { items: [campaign] };
       }
+      if (path === '/contacts') {
+        return { items: [] };
+      }
+      if (path === '/campaigns/campaign-1/recipients') {
+        return { contactIds: [] };
+      }
       return { items: [] };
     });
     const client = { request };

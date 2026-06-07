@@ -6,6 +6,7 @@ import type {
   ForceResendRequest,
   ForceResendResponse,
   PlaceholderValidationResult,
+  RetryFailedResponse,
   SendOutcomeList
 } from './campaignEditor.types.js';
 
@@ -36,6 +37,11 @@ export function createCampaignEditorApi(client: ApiClient) {
       return client.request<ForceResendResponse>(`/campaigns/${campaignId}/recipients/${contactId}/force-resend`, {
         method: 'POST',
         body: JSON.stringify(input)
+      });
+    },
+    retryFailed(campaignId: string) {
+      return client.request<RetryFailedResponse>(`/campaigns/${campaignId}/retry-failed`, {
+        method: 'POST'
       });
     }
   };

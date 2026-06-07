@@ -1,10 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import type { Campaign } from '@vercom/common/types/mailing-campaigns';
+import type { Campaign, Contact } from '@vercom/common/types/mailing-campaigns';
 import { ApiClient } from '../api/client.js';
 import type { AuthState } from '../auth/authStore.js';
 import { createCampaignApi } from './campaignApi.js';
 import { AssignedCampaignSelector } from './AssignedCampaignSelector.js';
 import { CampaignForm } from './CampaignForm.js';
+import { CampaignSetupPanel } from './CampaignSetupPanel.js';
+import { createContactApi } from '../contacts/contactApi.js';
+import { createSendApi } from './sendApi.js';
 
 interface CampaignsPageProps {
   client?: ApiClient;
@@ -14,14 +17,18 @@ interface CampaignsPageProps {
 
 export function CampaignsPage({ client, auth, onEditCampaign }: CampaignsPageProps) {
   const api = useMemo(() => createCampaignApi(client ?? new ApiClient()), [client]);
+  const contactApi = useMemo(() => createContactApi(client ?? new ApiClient()), [client]);
+  const sendApi = useMemo(() => createSendApi(client ?? new ApiClient()), [client]);
   const [availableCampaigns, setAvailableCampaigns] = useState<Campaign[]>([]);
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [contacts, setContacts] = useState<Contact[]>([]);
   const [selectedEditorId, setSelectedEditorId] = useState<string>();
   const [error, setError] = useState<string>();
 
   async function load() {
     try {
       const allCampaigns = (await api.list()).items;
+      setContacts((await contactApi.list()).items);
       setAvailableCampaigns(allCampaigns);
       const nextSelectedEditorId = selectedEditorId ?? allCampaigns[0]?.assignedOperatorId;
       setSelectedEditorId(nextSelectedEditorId);
@@ -36,6 +43,7 @@ export function CampaignsPage({ client, auth, onEditCampaign }: CampaignsPagePro
     if (!auth?.accessToken) {
       setAvailableCampaigns([]);
       setCampaigns([]);
+      setContacts([]);
       setSelectedEditorId(undefined);
       setError('Sign in to load campaigns.');
       return;
@@ -81,6 +89,32 @@ export function CampaignsPage({ client, auth, onEditCampaign }: CampaignsPagePro
                 </button>
               ) : null}
             </div>
+            {(campaign.status === 'draft' || campaign.status === 'ready') ? (
+              <CampaignSetupPanel
+                campaign={campaign}
+                contacts={contacts}
+                loadRecipients={async campaignId => (await api.recipients(campaignId)).contactIds}
+                onSaveRecipients={async (campaignId, contactIds) => {
+                  await api.replaceRecipients(campaignId, contactIds);
+                  await load();
+                }}
+                onSaveFallbackVariables={async (currentCampaign, fallbackVariables) => {
+                  await api.update(currentCampaign.id, { ...currentCampaign, fallbackVariables });
+                  await load();
+                }}
+                onValidateAndSend={async currentCampaign => {
+                  if (currentCampaign.status === 'draft') {
+                    const validation = await api.validateVariables(currentCampaign.id, true);
+                    if (!validation.approved) {
+                      return validation;
+                    }
+                  }
+                  await sendApi.queue(currentCampaign.id);
+                  await load();
+                  return { approved: true, items: [] };
+                }}
+              />
+            ) : null}
           </li>
         ))}
       </ul>

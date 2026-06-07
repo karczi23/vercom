@@ -8,17 +8,20 @@ describe('CampaignEditorToolbar', () => {
     const onBold = vi.fn();
     const onItalic = vi.fn();
     const onHeading = vi.fn();
+    const onParagraph = vi.fn();
     const onFont = vi.fn();
 
-    render(<CampaignEditorToolbar onBold={onBold} onItalic={onItalic} onHeading={onHeading} onFont={onFont} />);
+    render(<CampaignEditorToolbar onBold={onBold} onItalic={onItalic} onHeading={onHeading} onParagraph={onParagraph} onFont={onFont} />);
     fireEvent.click(screen.getByTitle('Bold'));
     fireEvent.click(screen.getByTitle('Italic'));
-    fireEvent.change(screen.getByLabelText('Heading level'), { target: { value: '2' } });
+    fireEvent.change(screen.getByLabelText('Text style'), { target: { value: '2' } });
+    fireEvent.change(screen.getByLabelText('Text style'), { target: { value: 'p' } });
     fireEvent.change(screen.getByLabelText('Font family'), { target: { value: 'Verdana' } });
 
     expect(onBold).toHaveBeenCalledOnce();
     expect(onItalic).toHaveBeenCalledOnce();
     expect(onHeading).toHaveBeenCalledWith(2);
+    expect(onParagraph).toHaveBeenCalledOnce();
     expect(onFont).toHaveBeenCalledWith('Verdana');
   });
 });

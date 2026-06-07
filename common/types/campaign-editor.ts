@@ -48,6 +48,7 @@ export interface RecipientSendOutcome {
   failureReason?: string | undefined;
   requiresReview: boolean;
   forceResendAllowed: boolean;
+  retryFailedAllowed: boolean;
 }
 
 export interface SendOutcomeList {
@@ -64,4 +65,10 @@ export interface ForceResendResponse {
   contactId: Identifier;
   sendJobId: Identifier;
   status: 'force_resend_queued';
+}
+
+export interface RetryFailedResponse {
+  campaignId: Identifier;
+  sendJobId: Identifier;
+  status: 'retry_failed_queued';
 }

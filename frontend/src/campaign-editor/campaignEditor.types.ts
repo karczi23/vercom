@@ -5,6 +5,7 @@ import type {
   ForceResendRequest,
   ForceResendResponse,
   PlaceholderValidationResult,
+  RetryFailedResponse,
   SendOutcomeList
 } from '@vercom/common/types/campaign-editor';
 
@@ -15,6 +16,7 @@ export type {
   ForceResendRequest,
   ForceResendResponse,
   PlaceholderValidationResult,
+  RetryFailedResponse,
   SendOutcomeList
 };
 

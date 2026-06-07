@@ -24,6 +24,7 @@ export function PellEditor({ value, onChange }: PellEditorProps) {
       onChange
     });
     contentRef.current = editor.content;
+    editor.content.classList.add('campaign-rich-text-content');
     editor.content.innerHTML = value;
 
     const handlePaste = (event: ClipboardEvent) => {

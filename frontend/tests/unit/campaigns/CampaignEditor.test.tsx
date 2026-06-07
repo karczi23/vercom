@@ -10,5 +10,6 @@ describe('CampaignForm', () => {
     expect(screen.getByLabelText('Topic')).toBeTruthy();
     expect(screen.getByLabelText('Campaign editor toolbar')).toBeTruthy();
     expect(screen.getByTitle('Bold')).toBeTruthy();
+    expect(screen.queryByLabelText('Assigned operator')).toBeNull();
   });
 });

@@ -7,6 +7,7 @@ import { ForceResendDialog } from './ForceResendDialog.js';
 import { PellEditor } from './PellEditor.js';
 import { SendOutcomePanel } from './SendOutcomePanel.js';
 import type { CampaignEditorDraft, CampaignPreview as Preview, SendOutcomeList } from './campaignEditor.types.js';
+import { useRichTextCommands } from './useRichTextCommands.js';
 
 interface CampaignEditorPageProps {
   campaignId: string;
@@ -23,6 +24,7 @@ export function CampaignEditorPage({ campaignId, client }: CampaignEditorPagePro
   const [forceContactId, setForceContactId] = useState<string>();
   const [message, setMessage] = useState<string>();
   const editorRootRef = useRef<HTMLDivElement>(null);
+  const { command, setHeading, setParagraph } = useRichTextCommands(editorRootRef, content, setContent);
 
   async function load() {
     const loaded = await api.getDraft(campaignId);
@@ -48,9 +50,10 @@ export function CampaignEditorPage({ campaignId, client }: CampaignEditorPagePro
     setPreview(await api.preview(campaignId, { topic, templateContent: content }));
   }
 
-  function command(name: string, value?: string) {
-    document.execCommand(name, false, value);
-    setContent(editorRootRef.current?.querySelector('.pell-content')?.innerHTML ?? content);
+  async function retryFailed() {
+    await api.retryFailed(campaignId);
+    setOutcomes(await api.sendOutcomes(campaignId));
+    setMessage('Retry queued for failed recipients.');
   }
 
   return (
@@ -75,7 +78,8 @@ export function CampaignEditorPage({ campaignId, client }: CampaignEditorPagePro
         <CampaignEditorToolbar
           onBold={() => command('bold')}
           onItalic={() => command('italic')}
-          onHeading={level => command('formatBlock', `H${level}`)}
+          onHeading={setHeading}
+          onParagraph={setParagraph}
           onFont={font => command('fontName', font)}
         />
         <PellEditor value={content} onChange={value => setContent(value)} />
@@ -93,7 +97,7 @@ export function CampaignEditorPage({ campaignId, client }: CampaignEditorPagePro
           }}
         />
       ) : null}
-      <SendOutcomePanel items={outcomes.items} onForceResend={setForceContactId} />
+      <SendOutcomePanel items={outcomes.items} onForceResend={setForceContactId} onRetryFailed={() => void retryFailed()} />
     </section>
   );
 }
