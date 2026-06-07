@@ -1,16 +1,18 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import type { Campaign } from '@vercom/common/types/mailing-campaigns';
 import { ApiClient } from '../api/client.js';
+import type { AuthState } from '../auth/authStore.js';
 import { createCampaignApi } from './campaignApi.js';
 import { AssignedCampaignSelector } from './AssignedCampaignSelector.js';
 import { CampaignForm } from './CampaignForm.js';
 
 interface CampaignsPageProps {
   client?: ApiClient;
+  auth?: AuthState;
   onEditCampaign?: (campaignId: string) => void;
 }
 
-export function CampaignsPage({ client, onEditCampaign }: CampaignsPageProps) {
+export function CampaignsPage({ client, auth, onEditCampaign }: CampaignsPageProps) {
   const api = useMemo(() => createCampaignApi(client ?? new ApiClient()), [client]);
   const [availableCampaigns, setAvailableCampaigns] = useState<Campaign[]>([]);
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
@@ -31,8 +33,15 @@ export function CampaignsPage({ client, onEditCampaign }: CampaignsPageProps) {
   }
 
   useEffect(() => {
+    if (!auth?.accessToken) {
+      setAvailableCampaigns([]);
+      setCampaigns([]);
+      setSelectedEditorId(undefined);
+      setError('Sign in to load campaigns.');
+      return;
+    }
     void load();
-  }, []);
+  }, [auth?.accessToken]);
 
   async function selectEditor(editorId: string) {
     setSelectedEditorId(editorId);

@@ -192,13 +192,13 @@ only campaigns assigned to that editor are selectable for editing.
 **Purpose**: Ensure contacts and campaigns are loaded after successful login even
 when their first page-load requests failed with 401 before authentication.
 
-- [ ] T078 [P] [US1] Add frontend unit test for reloading contacts after login in `frontend/tests/unit/contacts/ContactsPageAuthReload.test.tsx`
-- [ ] T079 [P] [US1] Add frontend unit test for reloading campaigns after login in `frontend/tests/unit/campaigns/CampaignsPageAuthReload.test.tsx`
-- [ ] T080 [US1] Propagate authentication state changes from `frontend/src/layout/AppLayout.tsx` to protected contacts and campaigns sections
-- [ ] T081 [US1] Update `frontend/src/contacts/ContactsPage.tsx` so successful login triggers reload after prior unauthenticated failure
-- [ ] T082 [US1] Update `frontend/src/campaigns/CampaignsPage.tsx` so successful login triggers reload after prior unauthenticated failure and assigned-editor options refresh
-- [ ] T083 [US1] Ensure protected contacts and campaigns clear stale data or show an unauthenticated state after token loss/logout in `frontend/src/auth/authStore.ts` and page components
-- [ ] T084 [US1] Update quickstart validation results for login-triggered contacts/campaigns reload in `specs/002-campaign-editor/quickstart.md`
+- [X] T078 [P] [US1] Add frontend unit test for reloading contacts after login in `frontend/tests/unit/contacts/ContactsPageAuthReload.test.tsx`
+- [X] T079 [P] [US1] Add frontend unit test for reloading campaigns after login in `frontend/tests/unit/campaigns/CampaignsPageAuthReload.test.tsx`
+- [X] T080 [US1] Propagate authentication state changes from `frontend/src/layout/AppLayout.tsx` to protected contacts and campaigns sections
+- [X] T081 [US1] Update `frontend/src/contacts/ContactsPage.tsx` so successful login triggers reload after prior unauthenticated failure
+- [X] T082 [US1] Update `frontend/src/campaigns/CampaignsPage.tsx` so successful login triggers reload after prior unauthenticated failure and assigned-editor options refresh
+- [X] T083 [US1] Ensure protected contacts and campaigns clear stale data or show an unauthenticated state after token loss/logout in `frontend/src/auth/authStore.ts` and page components
+- [X] T084 [US1] Update quickstart validation results for login-triggered contacts/campaigns reload in `specs/002-campaign-editor/quickstart.md`
 
 ---
 

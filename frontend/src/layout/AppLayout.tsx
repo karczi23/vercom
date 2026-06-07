@@ -32,10 +32,10 @@ export function AppLayout() {
         </aside>
         <div className="grid gap-6">
           <section id="contacts">
-            <ContactsPage client={client} />
+            <ContactsPage auth={auth} client={client} />
           </section>
           <section id="campaigns">
-            <CampaignsPage client={client} onEditCampaign={setSelectedCampaignId} />
+            <CampaignsPage auth={auth} client={client} onEditCampaign={setSelectedCampaignId} />
           </section>
           {selectedCampaignId ? (
             <section id="campaign-editor">

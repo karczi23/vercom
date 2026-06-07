@@ -1,14 +1,16 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import type { Contact, ContactInput } from '@vercom/common/types/mailing-campaigns';
 import { ApiClient } from '../api/client.js';
+import type { AuthState } from '../auth/authStore.js';
 import { createContactApi } from './contactApi.js';
 import { ContactForm } from './ContactForm.js';
 
 interface ContactsPageProps {
   client?: ApiClient;
+  auth?: AuthState;
 }
 
-export function ContactsPage({ client }: ContactsPageProps) {
+export function ContactsPage({ client, auth }: ContactsPageProps) {
   const api = useMemo(() => createContactApi(client ?? new ApiClient()), [client]);
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [query, setQuery] = useState('');
@@ -30,8 +32,13 @@ export function ContactsPage({ client }: ContactsPageProps) {
   }
 
   useEffect(() => {
+    if (!auth?.accessToken) {
+      setContacts([]);
+      setError('Sign in to load contacts.');
+      return;
+    }
     void load('');
-  }, []);
+  }, [auth?.accessToken]);
 
   return (
     <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
