@@ -49,8 +49,9 @@ immediately in the browser
 validation; direct operator-authored HTML is forbidden; the main page must not
 offer campaign selections outside the selected editor's assignments; operators
 can only edit, preview, send, recover, or force-resend campaigns assigned to
-them; automatic recovery must never duplicate a successful or uncertain
-recipient submission
+them; protected contact and campaign data must reload after successful login even
+if pre-login requests returned unauthorized; automatic recovery must never
+duplicate a successful or uncertain recipient submission
 
 **Scale/Scope**: One campaign editor screen, main-page assigned-editor campaign
 selection, focused API deltas, and MCP deltas for agent access to the same
@@ -159,6 +160,7 @@ frontend/
 ├── Dockerfile
 ├── src/
 │   ├── api/
+│   ├── auth/
 │   ├── campaign-editor/
 │   │   ├── CampaignEditorPage.tsx
 │   │   ├── CampaignEditorToolbar.tsx
@@ -168,6 +170,7 @@ frontend/
 │   │   └── sanitizePreview.ts
 │   ├── campaigns/
 │   │   └── AssignedCampaignSelector.tsx
+│   ├── contacts/
 │   └── common/
 └── tests/
     └── unit/

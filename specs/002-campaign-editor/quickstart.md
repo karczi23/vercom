@@ -20,17 +20,23 @@ a test campaign.
 
 ## Validate User Story 1: Compose Campaign Content
 
-1. Open the main campaign page.
-2. Select an editor/operator from the assigned-editor selector.
-3. Confirm the campaign list only shows campaigns assigned to the selected
+1. Open the main campaign page while signed out.
+2. Confirm protected contacts and campaigns may show an unauthenticated state
+   without blocking later reloads.
+3. Sign in as an operator assigned to at least one campaign.
+4. Confirm contacts and campaigns reload automatically after login without a
+   manual browser refresh.
+5. Select an editor/operator from the assigned-editor selector.
+6. Confirm the campaign list only shows campaigns assigned to the selected
    editor.
-4. Open the campaign editor for one listed assigned draft campaign.
-5. Enter a topic.
-6. Enter body content containing `{{ Name }}` and another placeholder such as
+7. Open the campaign editor for one listed assigned draft campaign.
+8. Enter a topic.
+9. Enter body content containing `{{ Name }}` and another placeholder such as
    `{{ company }}`.
-7. Use the toolbar to apply bold, italic, headings 1-6, and each approved font.
-8. Save the draft, reopen it, and confirm formatting and placeholders remain.
-9. Run unit tests for assigned campaign selection, placeholder extraction,
+10. Use the toolbar to apply bold, italic, headings 1-6, and each approved font.
+11. Save the draft, reopen it, and confirm formatting and placeholders remain.
+12. Run unit tests for auth-triggered reload, assigned campaign selection,
+   placeholder extraction,
    editor DTO validation, and draft
    save service behavior.
 

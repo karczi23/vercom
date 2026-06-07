@@ -49,6 +49,10 @@ operator-authored HTML.
 6. **Given** an operator without admin privileges is on the main campaign page,
    **When** the campaign list loads, **Then** the editor selection is scoped to
    that operator and campaigns assigned to other editors are not selectable.
+7. **Given** the main page loads before the user is authenticated and protected
+   contacts or campaigns return an unauthorized response, **When** the user logs
+   in successfully, **Then** the page reloads protected contacts and campaigns
+   automatically and existing assigned campaigns become visible for editing.
 
 ---
 
@@ -123,6 +127,9 @@ same campaign, while unsent or failed recipients remain visible for safe recover
 - An operator attempts to edit or resend a campaign assigned to another operator.
 - A user selects an editor who has no assigned campaigns.
 - A user changes the selected editor after opening a campaign editor.
+- The contacts and campaigns sections load before authentication and receive
+  unauthorized responses.
+- A user logs in after an initial unauthorized data load has already failed.
 - An operator force-resends a recipient with uncertain provider outcome and the
   recipient receives a duplicate email for the same campaign.
 
@@ -181,6 +188,13 @@ same campaign, while unsent or failed recipients remain visible for safe recover
 - **FR-020**: Opening a campaign editor from the main page MUST preserve the
   selected editor context and MUST NOT allow direct selection of a campaign
   outside that selected editor's assigned campaign list.
+- **FR-021**: The main page MUST reload protected contacts and campaigns after a
+  successful login, even if initial unauthenticated requests previously failed.
+- **FR-022**: Initial unauthorized responses for contacts or campaigns MUST be
+  treated as an unauthenticated state, not as a terminal data-loading failure.
+- **FR-023**: After logout or token loss, protected contact and campaign views
+  MUST clear stale authenticated data or require re-authentication before
+  allowing edits.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -219,6 +233,9 @@ same campaign, while unsent or failed recipients remain visible for safe recover
 - **SC-008**: In acceptance testing, selecting an editor on the main campaign
   page shows only campaigns assigned to that editor in 100% of tested admin and
   operator access scenarios.
+- **SC-009**: In acceptance testing, logging in after initial unauthenticated
+  contacts/campaigns requests failed reloads both sections and shows existing
+  editable campaigns without a manual page refresh.
 
 ## Assumptions
 
@@ -226,6 +243,8 @@ same campaign, while unsent or failed recipients remain visible for safe recover
   admin/operator access rules from the mailing campaigns feature.
 - The term "editor" refers to the operator/editor user assigned to campaigns by
   the existing campaign assignment model.
+- The application may render the login form and protected sections on the same
+  page, so protected data loading must respond to authentication state changes.
 - Supported formatting is limited to toolbar-controlled bold, italic, heading,
   and font selection for this feature.
 - Raw HTML input is not a supported authoring workflow, even for admins.
