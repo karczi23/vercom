@@ -1,8 +1,9 @@
 import type { NextFunction, Request, Response } from 'express';
 import { ApiError } from '../common/apiErrors.js';
 import { createOpenApiValidators, type HttpMethod } from './openapi-validation/openapiValidator.js';
+import { loadMergedOpenApiDocument } from './openapi-validation/campaignEditorValidation.js';
 
-const validators = createOpenApiValidators();
+const validators = createOpenApiValidators(loadMergedOpenApiDocument());
 
 export function validateOpenApi(pathTemplate: string, method: HttpMethod, successStatus = '200') {
   const operation = validators.getOperation(pathTemplate, method, successStatus);

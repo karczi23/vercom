@@ -6,9 +6,10 @@ import { CampaignForm } from './CampaignForm.js';
 
 interface CampaignsPageProps {
   client?: ApiClient;
+  onEditCampaign?: (campaignId: string) => void;
 }
 
-export function CampaignsPage({ client }: CampaignsPageProps) {
+export function CampaignsPage({ client, onEditCampaign }: CampaignsPageProps) {
   const api = useMemo(() => createCampaignApi(client ?? new ApiClient()), [client]);
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [error, setError] = useState<string>();
@@ -38,7 +39,14 @@ export function CampaignsPage({ client }: CampaignsPageProps) {
         {campaigns.map(campaign => (
           <li className="rounded-md border border-slate-200 px-4 py-3" key={campaign.id}>
             <div className="font-medium text-slate-950">{campaign.name}</div>
-            <div className="text-sm text-slate-600">{campaign.status}</div>
+            <div className="mt-1 flex items-center justify-between gap-3">
+              <div className="text-sm text-slate-600">{campaign.status}</div>
+              {onEditCampaign ? (
+                <button className="rounded-md border border-teal-700 px-3 py-2 text-sm font-medium text-teal-800" type="button" onClick={() => onEditCampaign(campaign.id)}>
+                  Editor
+                </button>
+              ) : null}
+            </div>
           </li>
         ))}
       </ul>

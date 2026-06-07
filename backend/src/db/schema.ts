@@ -103,3 +103,16 @@ export const sendAttempts = pgTable('send_attempts', {
   failureReason: text('failure_reason'),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
 });
+
+export const forceResendAcknowledgements = pgTable('force_resend_acknowledgements', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  campaignId: uuid('campaign_id').notNull().references(() => campaigns.id),
+  contactId: uuid('contact_id').notNull().references(() => contacts.id),
+  acknowledgedByUserId: uuid('acknowledged_by_user_id').notNull().references(() => users.id),
+  acknowledgedDuplicateRisk: boolean('acknowledged_duplicate_risk').notNull(),
+  reason: text('reason'),
+  sendJobId: uuid('send_job_id').notNull().references(() => sendJobs.id),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
+}, table => ({
+  campaignContactUnique: uniqueIndex('force_resend_ack_campaign_contact_unique').on(table.campaignId, table.contactId)
+}));

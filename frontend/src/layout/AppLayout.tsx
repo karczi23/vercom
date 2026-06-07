@@ -4,9 +4,11 @@ import { getAuthState, type AuthState } from '../auth/authStore.js';
 import { LoginForm } from '../auth/LoginForm.js';
 import { ContactsPage } from '../contacts/ContactsPage.js';
 import { CampaignsPage } from '../campaigns/CampaignsPage.js';
+import { CampaignEditorPage } from '../campaign-editor/CampaignEditorPage.js';
 
 export function AppLayout() {
   const [auth, setAuth] = useState<AuthState>(getAuthState());
+  const [selectedCampaignId, setSelectedCampaignId] = useState<string>();
   const client = useMemo(() => new ApiClient({ getToken: () => auth.accessToken }), [auth.accessToken]);
 
   return (
@@ -33,8 +35,13 @@ export function AppLayout() {
             <ContactsPage client={client} />
           </section>
           <section id="campaigns">
-            <CampaignsPage client={client} />
+            <CampaignsPage client={client} onEditCampaign={setSelectedCampaignId} />
           </section>
+          {selectedCampaignId ? (
+            <section id="campaign-editor">
+              <CampaignEditorPage campaignId={selectedCampaignId} client={client} />
+            </section>
+          ) : null}
         </div>
       </div>
     </main>

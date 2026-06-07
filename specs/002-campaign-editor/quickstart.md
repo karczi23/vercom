@@ -83,3 +83,18 @@ Required contract coverage:
 - MCP tools expose the same authorization and validation behavior as HTTP.
 - No EmailLabs request is made during editor save, preview, validation, or force
   resend HTTP handling; sends happen through queued worker jobs.
+
+## Validation Results
+
+Recorded on 2026-06-07:
+
+- `npm run typecheck`: PASS
+- `npm run test`: PASS, 37 test files and 56 tests
+- `npm run build`: PASS
+- Source checks: PASS for OpenAPI-derived editor validation, 10/minute editor
+  rate limiting, assigned-operator authorization, no direct SQL in
+  `backend/src/campaign-editor`, and no EmailLabs call in editor/recovery HTTP or
+  MCP code paths.
+
+Manual browser/container validation remains the follow-up for visual editor
+behavior in a real browser and Docker Compose runtime.
