@@ -18,9 +18,9 @@ export function AssignedCampaignSelector({ campaigns, selectedEditorId, visibleC
   }, [campaigns, selectedEditorId]);
 
   return (
-    <div className="mt-5 grid gap-2 rounded-md border border-slate-200 bg-slate-50 p-3">
+    <div className="grid gap-2 rounded-md border border-slate-200 bg-slate-50 p-3">
       <label className="grid gap-1 text-sm font-medium text-slate-800">
-        Assigned editor
+        Show campaigns assigned to
         <select
           className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-normal text-slate-950"
           disabled={editorIds.length === 0}

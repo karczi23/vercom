@@ -29,7 +29,7 @@ describe('AssignedCampaignSelector', () => {
     const onSelect = vi.fn();
     render(<AssignedCampaignSelector campaigns={campaigns} selectedEditorId="operator-1" onSelectEditor={onSelect} visibleCampaignCount={1} />);
 
-    fireEvent.change(screen.getByLabelText('Assigned editor'), { target: { value: 'operator-2' } });
+    fireEvent.change(screen.getByLabelText('Show campaigns assigned to'), { target: { value: 'operator-2' } });
 
     expect(onSelect).toHaveBeenCalledWith('operator-2');
     expect(screen.getByText('1 campaign assigned')).toBeTruthy();

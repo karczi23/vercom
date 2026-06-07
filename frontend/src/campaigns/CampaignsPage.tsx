@@ -51,13 +51,15 @@ export function CampaignsPage({ client, onEditCampaign }: CampaignsPageProps) {
         <h2 className="mt-1 text-xl font-semibold text-slate-950">Campaigns</h2>
       </div>
       {error ? <p className="mt-4 rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-800" role="alert">{error}</p> : null}
+      <div className="mt-4">
+        <AssignedCampaignSelector
+          campaigns={availableCampaigns}
+          selectedEditorId={selectedEditorId}
+          visibleCampaignCount={campaigns.length}
+          onSelectEditor={editorId => { void selectEditor(editorId); }}
+        />
+      </div>
       <CampaignForm onSubmit={async input => { await api.create(input); await load(); }} />
-      <AssignedCampaignSelector
-        campaigns={availableCampaigns}
-        selectedEditorId={selectedEditorId}
-        visibleCampaignCount={campaigns.length}
-        onSelectEditor={editorId => { void selectEditor(editorId); }}
-      />
       <ul className="mt-5 grid gap-3">
         {campaigns.map(campaign => (
           <li className="rounded-md border border-slate-200 px-4 py-3" key={campaign.id}>
