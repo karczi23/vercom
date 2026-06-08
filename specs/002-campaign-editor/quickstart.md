@@ -20,13 +20,27 @@ a test campaign.
 
 ## Validate User Story 1: Compose Campaign Content
 
-1. Open the campaign editor for an assigned draft campaign.
-2. Enter a topic.
-3. Enter body content containing `{{ Name }}` and another placeholder such as
+1. Open the main campaign page while signed out.
+2. Confirm protected contacts and campaigns may show an unauthenticated state
+   without blocking later reloads.
+3. Sign in as an operator assigned to at least one campaign.
+4. Confirm contacts and campaigns reload automatically after login without a
+   manual browser refresh.
+5. Select an editor/operator from the assigned-editor selector.
+6. Confirm the campaign list only shows campaigns assigned to the selected
+   editor.
+7. Create a campaign using the rich-text editor in the campaign creation flow.
+8. Confirm the create flow exposes the same bold, italic, heading, font,
+   placeholder, and preview behavior as editing.
+9. Open the campaign editor for one listed assigned draft campaign.
+10. Enter a topic.
+11. Enter body content containing `{{ Name }}` and another placeholder such as
    `{{ company }}`.
-4. Use the toolbar to apply bold, italic, headings 1-6, and each approved font.
-5. Save the draft, reopen it, and confirm formatting and placeholders remain.
-6. Run unit tests for placeholder extraction, editor DTO validation, and draft
+12. Use the toolbar to apply bold, italic, headings 1-6, and each approved font.
+13. Save the draft, reopen it, and confirm formatting and placeholders remain.
+14. Run unit tests for rich-text campaign creation, auth-triggered reload, assigned campaign selection,
+   placeholder extraction,
+   editor DTO validation, and draft
    save service behavior.
 
 Expected result: the draft stores one sanitized `templateContent` value with
@@ -79,7 +93,25 @@ Required contract coverage:
 ## Manual Non-Regression Checks
 
 - Operators cannot access another operator's campaign editor.
-- The 10 requests/minute rate limit applies to editor endpoints.
 - MCP tools expose the same authorization and validation behavior as HTTP.
 - No EmailLabs request is made during editor save, preview, validation, or force
   resend HTTP handling; sends happen through queued worker jobs.
+
+## Validation Results
+
+Recorded on 2026-06-07:
+
+- `npm run typecheck`: PASS
+- `npm run test`: PASS, 42 test files and 62 tests
+- `npm run build`: PASS
+- Source checks: PASS for OpenAPI-derived editor validation through the shared
+  OpenAPI document, assigned-operator authorization, no direct SQL in
+  `backend/src/campaign-editor`, and no EmailLabs call in editor/recovery HTTP or
+  MCP code paths.
+- Assigned editor campaign selection coverage: PASS for OpenAPI contract,
+  backend service filtering, and frontend selector behavior.
+- Auth-triggered reload coverage: PASS for contacts and campaigns reloading
+  after login and clearing protected data when no token is present.
+
+Manual browser/container validation remains the follow-up for visual editor
+behavior in a real browser and Docker Compose runtime.

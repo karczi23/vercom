@@ -12,18 +12,21 @@
 
 ### User Story 1 - Compose Campaign Content (Priority: P1)
 
-An operator creates or edits a campaign in a CMS-like screen by entering a topic,
-writing email content, applying supported formatting from toolbar buttons, and
-using placeholders such as `{{ Name }}` that EmailLabs will replace during
-sending.
+An operator selects one of the campaigns assigned to an editor from the main
+campaign page, then creates or edits that campaign in a CMS-like screen by
+entering a topic, writing email content, applying supported formatting from
+toolbar buttons, and using placeholders such as `{{ Name }}` that EmailLabs will
+replace during sending.
 
 **Why this priority**: Operators need a safe, visual campaign authoring workflow
 before campaign previews or sending can be trusted.
 
-**Independent Test**: Create a campaign draft, enter topic and body content, add
-valid placeholders, apply bold, italic, heading, and font controls from the
-toolbar, save the draft, reopen it, and confirm the content and formatting are
-preserved as allowed generated HTML without accepting operator-authored HTML.
+**Independent Test**: Select an editor on the main campaign page, confirm only
+that editor's assigned campaigns are shown, open one assigned campaign, enter
+topic and body content, add valid placeholders, apply bold, italic, heading, and
+font controls from the toolbar, save the draft, reopen it, and confirm the
+content and formatting are preserved as allowed generated HTML without accepting
+operator-authored HTML.
 
 **Acceptance Scenarios**:
 
@@ -40,6 +43,20 @@ preserved as allowed generated HTML without accepting operator-authored HTML.
 4. **Given** an operator types any placeholder in the `{{ value }}` form,
    **When** the campaign is saved, **Then** the placeholder is allowed and later
    validated against recipient variables before send.
+5. **Given** a user is on the main campaign page, **When** they select an editor,
+   **Then** the page lists campaigns assigned to that editor and allows opening
+   the editor only for those listed campaigns.
+6. **Given** an operator without admin privileges is on the main campaign page,
+   **When** the campaign list loads, **Then** the editor selection is scoped to
+   that operator and campaigns assigned to other editors are not selectable.
+7. **Given** the main page loads before the user is authenticated and protected
+   contacts or campaigns return an unauthorized response, **When** the user logs
+   in successfully, **Then** the page reloads protected contacts and campaigns
+   automatically and existing assigned campaigns become visible for editing.
+8. **Given** an operator creates a new campaign, **When** they enter campaign
+   content, **Then** the creation flow uses the same rich-text editor, toolbar
+   controls, placeholder preservation, and preview behavior as editing an
+   existing campaign.
 
 ---
 
@@ -112,6 +129,11 @@ same campaign, while unsent or failed recipients remain visible for safe recover
   submissions.
 - A campaign recovery action is triggered twice from different browser sessions.
 - An operator attempts to edit or resend a campaign assigned to another operator.
+- A user selects an editor who has no assigned campaigns.
+- A user changes the selected editor after opening a campaign editor.
+- The contacts and campaigns sections load before authentication and receive
+  unauthorized responses.
+- A user logs in after an initial unauthorized data load has already failed.
 - An operator force-resends a recipient with uncertain provider outcome and the
   recipient receives a duplicate email for the same campaign.
 
@@ -121,6 +143,17 @@ same campaign, while unsent or failed recipients remain visible for safe recover
 
 - **FR-001**: The system MUST provide a CMS-like campaign editor screen in the
   frontend application for operators.
+- **FR-001e**: Creating a campaign MUST use the same rich-text editor controls,
+  placeholder handling, and preview behavior as editing an existing campaign.
+- **FR-001a**: The main campaign page MUST allow users to select an editor and
+  view campaigns assigned to that editor.
+- **FR-001b**: Non-admin operators MUST only be able to select themselves as the
+  editor filter and MUST NOT see campaigns assigned to other editors.
+- **FR-001c**: Admin users MAY select any editor with campaign assignments and
+  view that editor's assigned campaigns.
+- **FR-001d**: If the selected editor has no assigned campaigns, the main
+  campaign page MUST show an empty state instead of opening an arbitrary
+  campaign.
 - **FR-002**: The campaign editor MUST allow operators to define a campaign topic.
 - **FR-003**: The campaign editor MUST allow operators to write campaign email
   content in a textarea-like editing area.
@@ -158,11 +191,23 @@ same campaign, while unsent or failed recipients remain visible for safe recover
 - **FR-019**: Operator campaign assignment restrictions from the mailing
   campaigns feature MUST apply to editing, previewing, sending, and recovery
   actions in this editor.
+- **FR-020**: Opening a campaign editor from the main page MUST preserve the
+  selected editor context and MUST NOT allow direct selection of a campaign
+  outside that selected editor's assigned campaign list.
+- **FR-021**: The main page MUST reload protected contacts and campaigns after a
+  successful login, even if initial unauthenticated requests previously failed.
+- **FR-022**: Initial unauthorized responses for contacts or campaigns MUST be
+  treated as an unauthenticated state, not as a terminal data-loading failure.
+- **FR-023**: After logout or token loss, protected contact and campaign views
+  MUST clear stale authenticated data or require re-authentication before
+  allowing edits.
 
 ### Key Entities *(include if feature involves data)*
 
 - **Campaign Draft**: Editable campaign definition containing topic, content,
   supported formatting, placeholders, assigned operator, and draft state.
+- **Editor Assignment Filter**: Main-page selection state identifying which
+  editor/operator's assigned campaigns are currently visible and selectable.
 - **Editor Content**: Sanitized campaign content with controlled rich-text
   formatting stored as allowed generated HTML, EmailLabs placeholder tokens, and
   direct HTML preserved only as plain text.
@@ -191,11 +236,21 @@ same campaign, while unsent or failed recipients remain visible for safe recover
   review-required recipients from the send outcome view without inspecting logs.
 - **SC-007**: Assigned operators can force resend for uncertain recipients only
   after an explicit duplicate-risk acknowledgement.
+- **SC-008**: In acceptance testing, selecting an editor on the main campaign
+  page shows only campaigns assigned to that editor in 100% of tested admin and
+  operator access scenarios.
+- **SC-009**: In acceptance testing, logging in after initial unauthenticated
+  contacts/campaigns requests failed reloads both sections and shows existing
+  editable campaigns without a manual page refresh.
 
 ## Assumptions
 
 - The editor is part of the existing campaign management workflow and inherits
   admin/operator access rules from the mailing campaigns feature.
+- The term "editor" refers to the operator/editor user assigned to campaigns by
+  the existing campaign assignment model.
+- The application may render the login form and protected sections on the same
+  page, so protected data loading must respond to authentication state changes.
 - Supported formatting is limited to toolbar-controlled bold, italic, heading,
   and font selection for this feature.
 - Raw HTML input is not a supported authoring workflow, even for admins.
@@ -219,8 +274,8 @@ same campaign, while unsent or failed recipients remain visible for safe recover
 - **Data/Security**: Direct HTML authoring is forbidden; pasted or typed HTML is
   sanitized and treated as plain text. Toolbar-generated formatting uses only
   approved HTML. Operator campaign assignment restrictions remain mandatory.
-- **Rate Limiting**: Existing 10 requests/minute API rate limiting applies to
-  editor save, preview, send, and recovery requests.
+- **Rate Limiting**: Campaign editor endpoints do not add feature-specific rate
+  limiting.
 - **Async Communication**: Send and recovery actions remain asynchronous and are
   driven by per-recipient send state.
 - **External API Failure**: Partial and uncertain provider outcomes must never

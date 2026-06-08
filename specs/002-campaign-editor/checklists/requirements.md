@@ -37,4 +37,8 @@
   - Toolbar controls generate only approved HTML; typed/pasted HTML is sanitized as plain text.
   - Any syntactically valid `{{ value }}` placeholder is allowed; variables are validated before send.
   - Assigned operators can force resend uncertain recipients after acknowledging duplicate risk.
+- Follow-up requirement added on 2026-06-07:
+  - Main campaign page lets users select an editor/operator and open only campaigns assigned to that editor.
+- Follow-up requirement added on 2026-06-07:
+  - Protected contacts and campaigns reload automatically after successful login, even if initial signed-out requests returned 401.
 - Specification is ready for `/speckit-plan`.

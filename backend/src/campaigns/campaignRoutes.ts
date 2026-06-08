@@ -11,7 +11,14 @@ export function createCampaignRoutes(db: Database) {
 
   router.get('/campaigns', validateOpenApi('/campaigns', 'get'), async (req, res, next) => {
     try {
-      res.json({ items: await service.list(req.user!, Number(req.query.limit ?? 25), Number(req.query.offset ?? 0)) });
+      res.json({
+        items: await service.list(
+          req.user!,
+          Number(req.query.limit ?? 25),
+          Number(req.query.offset ?? 0),
+          typeof req.query.assignedEditorId === 'string' ? req.query.assignedEditorId : undefined
+        )
+      });
     } catch (error) {
       next(error);
     }
@@ -41,6 +48,13 @@ export function createCampaignRoutes(db: Database) {
     try {
       await service.delete(req.user!, String(req.params.campaignId));
       res.status(204).end();
+    } catch (error) {
+      next(error);
+    }
+  });
+  router.get('/campaigns/:campaignId/recipients', validateOpenApi('/campaigns/{campaignId}/recipients', 'get'), async (req, res, next) => {
+    try {
+      res.json(await service.listRecipients(req.user!, String(req.params.campaignId)));
     } catch (error) {
       next(error);
     }

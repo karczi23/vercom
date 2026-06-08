@@ -31,6 +31,8 @@ export interface CampaignInput {
   assignedOperatorId: Identifier;
 }
 
+export type CampaignCreateInput = Omit<CampaignInput, 'assignedOperatorId'>;
+
 export interface Campaign extends CampaignInput {
   id: Identifier;
   status: CampaignStatus;

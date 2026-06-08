@@ -7,13 +7,14 @@
 ## Summary
 
 Build the CMS-like campaign editor as a focused extension to the mailing
-campaigns application. The frontend uses React with a small WYSIWYG editor
-library (`pell`) for toolbar-controlled rich text, DOMPurify with a strict
-allowlist for sanitization, and spec-002 API deltas for editor save, validation,
-preview, outcome review, and operator-acknowledged force resend. The backend
-keeps Express, TypeScript strict mode, OpenAPI-derived validation, Drizzle ORM,
-PostgreSQL, Vitest, existing operator assignment checks, and asynchronous send
-recovery through the worker.
+campaigns application. The main campaign page lets users select an editor and
+open only campaigns assigned to that editor. The frontend uses React with a
+small WYSIWYG editor library (`pell`) for toolbar-controlled rich text, DOMPurify
+with a strict allowlist for sanitization, and spec-002 API deltas for editor
+save, validation, preview, outcome review, and operator-acknowledged force
+resend. The backend keeps Express, TypeScript strict mode, OpenAPI-derived
+validation, Drizzle ORM, PostgreSQL, Vitest, existing operator assignment
+checks, and asynchronous send recovery through the worker.
 
 ## Technical Context
 
@@ -38,27 +39,31 @@ and Docker Compose
 **Project Type**: Web application with backend API, frontend UI, background
 worker, database, and MCP server
 
-**Performance Goals**: Editor screen opens with saved draft content in under 2
-seconds on local development data; save, validate, and preview requests return
-within 500ms p95 excluding network latency; toolbar actions apply immediately in
-the browser
+**Performance Goals**: The main campaign page filters campaigns by selected
+editor in under 500ms p95 on local development data; editor screen opens with
+saved draft content in under 2 seconds; save, validate, and preview requests
+return within 500ms p95 excluding network latency; toolbar actions apply
+immediately in the browser
 
 **Constraints**: Minimal libraries; OpenAPI is the source of truth for endpoint
-validation; direct operator-authored HTML is forbidden; operators can only edit,
-preview, send, recover, or force-resend campaigns assigned to them; automatic
-recovery must never duplicate a successful or uncertain recipient submission
+validation; direct operator-authored HTML is forbidden; the main page must not
+offer campaign selections outside the selected editor's assignments; operators
+can only edit, preview, send, recover, or force-resend campaigns assigned to
+them; protected contact and campaign data must reload after successful login even
+if pre-login requests returned unauthorized; automatic recovery must never
+duplicate a successful or uncertain recipient submission
 
-**Scale/Scope**: One campaign editor screen, focused API deltas, and MCP deltas
-for agent access to the same editor/recovery capabilities. Bulk import,
-scheduling, multi-step marketing automation, reusable design blocks, images, and
-future editor extension are out of scope.
+**Scale/Scope**: One campaign editor screen, main-page assigned-editor campaign
+selection, focused API deltas, and MCP deltas for agent access to the same
+editor/recovery capabilities. Bulk import, scheduling, multi-step marketing
+automation, reusable design blocks, images, and future editor extension are out
+of scope.
 
 **API Contract**: `contracts/openapi-delta.yaml`; backend compiles request and
 response schemas from OpenAPI with AJV. The delta extends the mailing campaigns
 contract from feature 001 without redefining the full API.
 
-**Rate Limits**: 10 requests per minute per caller for editor save, validate,
-preview, outcome, and force-resend endpoints; stricter limits are not required.
+**Rate Limits**: No feature-specific campaign editor rate limit is added.
 
 **Async Communication**: Frontend and MCP/API calls use HTTP request/response as
 the required protocol boundary for editor save, validation, preview, and status
@@ -97,9 +102,8 @@ recipients after acknowledging possible duplication.
   contract tests; browser-specific editor behavior is covered by quickstart
   validation because no integration test suite is planned.
 - **Contract-Driven Security and Data Access**: PASS. OpenAPI plus AJV drives
-  endpoint validation, 10/minute rate limiting applies, Drizzle is the only
-  persistence layer, operator assignment checks protect campaign ownership, and
-  sanitization is explicit.
+  endpoint validation, Drizzle is the only persistence layer, operator
+  assignment checks protect campaign ownership, and sanitization is explicit.
 - **Operable, Containerized Systems**: PASS. API, frontend, worker, MCP server,
   and database run separately; send failures and uncertain outcomes are visible
   without logs; external provider failures are recorded without leaking secrets.
@@ -156,6 +160,7 @@ frontend/
 ├── Dockerfile
 ├── src/
 │   ├── api/
+│   ├── auth/
 │   ├── campaign-editor/
 │   │   ├── CampaignEditorPage.tsx
 │   │   ├── CampaignEditorToolbar.tsx
@@ -164,6 +169,8 @@ frontend/
 │   │   ├── campaignEditor.types.ts
 │   │   └── sanitizePreview.ts
 │   ├── campaigns/
+│   │   └── AssignedCampaignSelector.tsx
+│   ├── contacts/
 │   └── common/
 └── tests/
     └── unit/

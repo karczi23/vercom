@@ -65,12 +65,23 @@ export class SendWorkerService {
         campaignName: campaign.name
       });
       const recipientContacts = await this.recipients.listRecipientContacts(campaign.id);
+      const safeRecipientContacts = recipientContacts.filter(contact => isSafeToSubmit(contact.sendStatus));
       logger.info('Campaign recipients loaded for send', {
         jobId: job.id,
         campaignId: campaign.id,
-        recipientCount: recipientContacts.length
+        recipientCount: safeRecipientContacts.length,
+        skippedRecipientCount: recipientContacts.length - safeRecipientContacts.length
       });
-      const result = await this.submit(campaign, recipientContacts.map(contact => ({
+      if (safeRecipientContacts.length === 0) {
+        await this.jobs.mark(job.id, 'completed');
+        await this.campaigns.markStatus(campaign.id, campaign.status);
+        logger.info('Send job finished with no safe recipients', {
+          jobId: job.id,
+          campaignId: campaign.id
+        });
+        return true;
+      }
+      const result = await this.submit(campaign, safeRecipientContacts.map(contact => ({
         id: contact.contactId,
         email: contact.email,
         name: contact.name,

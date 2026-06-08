@@ -1,17 +1,16 @@
-import type { CampaignInput } from '@vercom/common/types/mailing-campaigns';
+import type { CampaignCreateInput, CampaignInput } from '@vercom/common/types/mailing-campaigns';
 import { validationError } from '../common/apiErrors.js';
 import { findUnsupportedPlaceholders } from './placeholderService.js';
 
-export function validateCampaignInput(raw: unknown): CampaignInput {
+export function validateCampaignCreateInput(raw: unknown): CampaignCreateInput {
   if (!raw || typeof raw !== 'object') {
     throw validationError('Campaign input must be an object');
   }
-  const input = raw as Partial<CampaignInput>;
+  const input = raw as Partial<CampaignCreateInput>;
   const errors: Record<string, string> = {};
   if (!input.name?.trim()) errors.name = 'Name is required';
   if (!input.subject?.trim()) errors.subject = 'Subject is required';
   if (!input.templateContent?.trim()) errors.templateContent = 'Template content is required';
-  if (!input.assignedOperatorId?.trim()) errors.assignedOperatorId = 'Assigned operator is required';
   if (!input.fallbackVariables || typeof input.fallbackVariables !== 'object') {
     errors.fallbackVariables = 'Fallback variables are required';
   }
@@ -27,8 +26,21 @@ export function validateCampaignInput(raw: unknown): CampaignInput {
     subject: input.subject!.trim(),
     templateContent: input.templateContent!,
     emailLabsTemplateId: input.emailLabsTemplateId,
-    fallbackVariables: input.fallbackVariables!,
-    assignedOperatorId: input.assignedOperatorId!
+    fallbackVariables: input.fallbackVariables!
+  };
+}
+
+export function validateCampaignInput(raw: unknown): CampaignInput {
+  if (!raw || typeof raw !== 'object') {
+    throw validationError('Campaign input must be an object');
+  }
+  const input = raw as Partial<CampaignInput>;
+  if (!input.assignedOperatorId?.trim()) {
+    throw validationError('Campaign input is invalid', { assignedOperatorId: 'Assigned operator is required' });
+  }
+  return {
+    ...validateCampaignCreateInput(raw),
+    assignedOperatorId: input.assignedOperatorId
   };
 }
 

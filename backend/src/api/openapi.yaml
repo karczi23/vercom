@@ -106,6 +106,11 @@ paths:
           in: query
           schema:
             $ref: '#/components/schemas/CampaignStatus'
+        - name: assignedEditorId
+          in: query
+          schema:
+            type: string
+          description: Restricts returned campaigns to the selected editor/operator assignment.
       responses:
         '200':
           description: Campaign list scoped by caller permissions
@@ -165,6 +170,17 @@ paths:
         '204':
           description: Deleted
   /campaigns/{campaignId}/recipients:
+    get:
+      summary: List selected campaign recipients
+      parameters:
+        - $ref: '#/components/parameters/CampaignId'
+      responses:
+        '200':
+          description: Current recipient selection
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecipientsResponse'
     post:
       summary: Replace campaign recipients
       parameters:
@@ -226,6 +242,142 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/SendAttempt'
+  /campaigns/{campaignId}/editor:
+    get:
+      summary: Get campaign editor draft
+      parameters:
+        - $ref: '#/components/parameters/CampaignId'
+      responses:
+        '200':
+          description: Current campaign editor draft
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignEditorDraft'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      summary: Save campaign editor draft
+      parameters:
+        - $ref: '#/components/parameters/CampaignId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CampaignEditorInput'
+      responses:
+        '200':
+          description: Saved and sanitized campaign editor draft
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignEditorDraft'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /campaigns/{campaignId}/editor/validate:
+    post:
+      summary: Validate placeholders and recipient variables before send
+      parameters:
+        - $ref: '#/components/parameters/CampaignId'
+      responses:
+        '200':
+          description: Placeholder validation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlaceholderValidationResult'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /campaigns/{campaignId}/editor/preview:
+    post:
+      summary: Preview sanitized editor content without replacing placeholders
+      parameters:
+        - $ref: '#/components/parameters/CampaignId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CampaignEditorInput'
+      responses:
+        '200':
+          description: Sanitized preview HTML and detected placeholders
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignPreview'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /campaigns/{campaignId}/send-outcomes:
+    get:
+      summary: List recipient send outcomes for campaign recovery review
+      parameters:
+        - $ref: '#/components/parameters/CampaignId'
+      responses:
+        '200':
+          description: Per-recipient send outcomes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SendOutcomeList'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /campaigns/{campaignId}/retry-failed:
+    post:
+      summary: Queue a safe retry for failed campaign recipients
+      parameters:
+        - $ref: '#/components/parameters/CampaignId'
+      responses:
+        '202':
+          description: Failed-recipient retry job queued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetryFailedResponse'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          description: Campaign has no failed recipients to retry
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /campaigns/{campaignId}/recipients/{contactId}/force-resend:
+    post:
+      summary: Force resend for an uncertain recipient after duplicate-risk acknowledgement
+      parameters:
+        - $ref: '#/components/parameters/CampaignId'
+        - $ref: '#/components/parameters/ContactId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForceResendRequest'
+      responses:
+        '202':
+          description: Force resend job queued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForceResendResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          description: Recipient is not in an uncertain state or resend is not allowed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 components:
   securitySchemes:
     bearerAuth:
@@ -262,6 +414,16 @@ components:
   responses:
     Unauthorized:
       description: Missing or invalid bearer token
+    Forbidden:
+      description: Caller is not allowed to access this resource
+    NotFound:
+      description: Resource was not found
+    ValidationError:
+      description: Request failed OpenAPI-derived validation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
     DuplicateContact:
       description: Contact email already exists for the authenticated operator
       content:
@@ -328,7 +490,7 @@ components:
       enum: [draft, ready, sending, sent, failed]
     CampaignInput:
       type: object
-      required: [name, subject, templateContent, fallbackVariables, assignedOperatorId]
+      required: [name, subject, templateContent, fallbackVariables]
       properties:
         name:
           type: string
@@ -344,8 +506,6 @@ components:
           type: object
           additionalProperties:
             type: string
-        assignedOperatorId:
-          type: string
     CampaignUpdateInput:
       type: object
       properties:
@@ -369,9 +529,11 @@ components:
       allOf:
         - $ref: '#/components/schemas/CampaignInput'
         - type: object
-          required: [id, status]
+          required: [id, assignedOperatorId, status]
           properties:
             id:
+              type: string
+            assignedOperatorId:
               type: string
             status:
               $ref: '#/components/schemas/CampaignStatus'
@@ -384,6 +546,14 @@ components:
           items:
             $ref: '#/components/schemas/Campaign'
     RecipientsInput:
+      type: object
+      required: [contactIds]
+      properties:
+        contactIds:
+          type: array
+          items:
+            type: string
+    RecipientsResponse:
       type: object
       required: [contactIds]
       properties:
@@ -447,6 +617,169 @@ components:
         createdAt:
           type: string
           format: date-time
+    CampaignEditorInput:
+      type: object
+      required: [topic, templateContent]
+      additionalProperties: false
+      properties:
+        topic:
+          type: string
+          minLength: 1
+          maxLength: 200
+        templateContent:
+          type: string
+          minLength: 1
+          maxLength: 100000
+          description: Sanitized allowed HTML generated by the editor plus EmailLabs placeholders.
+    CampaignEditorDraft:
+      type: object
+      required: [campaignId, topic, templateContent, placeholderNames, status, assignedOperatorId, updatedAt]
+      additionalProperties: false
+      properties:
+        campaignId:
+          type: string
+        topic:
+          type: string
+          minLength: 1
+          maxLength: 200
+        templateContent:
+          type: string
+          minLength: 1
+          maxLength: 100000
+        placeholderNames:
+          type: array
+          items:
+            type: string
+          uniqueItems: true
+        sanitizationWarnings:
+          type: array
+          items:
+            type: string
+        status:
+          $ref: '#/components/schemas/CampaignStatus'
+        assignedOperatorId:
+          type: string
+        updatedAt:
+          type: string
+          format: date-time
+    CampaignPreview:
+      type: object
+      required: [sanitizedHtml, placeholderNames]
+      properties:
+        sanitizedHtml:
+          type: string
+        placeholderNames:
+          type: array
+          items:
+            type: string
+          uniqueItems: true
+        warnings:
+          type: array
+          items:
+            type: string
+    PlaceholderValidationResult:
+      type: object
+      required: [campaignId, canSend, placeholders, recipients]
+      properties:
+        campaignId:
+          type: string
+        canSend:
+          type: boolean
+        placeholders:
+          type: array
+          items:
+            type: string
+          uniqueItems: true
+        recipients:
+          type: array
+          items:
+            type: object
+            required: [contactId, missingVariables, usesFallbackVariables, status]
+            properties:
+              contactId:
+                type: string
+              missingVariables:
+                type: array
+                items:
+                  type: string
+              usesFallbackVariables:
+                type: boolean
+              status:
+                type: string
+                enum: [valid, missing_variables]
+    SendOutcomeList:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/RecipientSendOutcome'
+    RecipientSendOutcome:
+      type: object
+      required: [campaignId, contactId, contactEmail, contactName, sendStatus, requiresReview, forceResendAllowed, retryFailedAllowed]
+      properties:
+        campaignId:
+          type: string
+        contactId:
+          type: string
+        contactEmail:
+          type: string
+          format: email
+        contactName:
+          type: string
+          minLength: 1
+        sendStatus:
+          type: string
+          enum: [pending, submitted, failed, uncertain, force_resend_queued]
+        providerMessageId:
+          type: string
+        lastAttemptAt:
+          type: string
+          format: date-time
+        failureReason:
+          type: string
+        requiresReview:
+          type: boolean
+        forceResendAllowed:
+          type: boolean
+        retryFailedAllowed:
+          type: boolean
+    ForceResendRequest:
+      type: object
+      required: [acknowledgedDuplicateRisk]
+      additionalProperties: false
+      properties:
+        acknowledgedDuplicateRisk:
+          type: boolean
+          enum: [true]
+        reason:
+          type: string
+          maxLength: 1000
+    ForceResendResponse:
+      type: object
+      required: [campaignId, contactId, sendJobId, status]
+      properties:
+        campaignId:
+          type: string
+        contactId:
+          type: string
+        sendJobId:
+          type: string
+        status:
+          type: string
+          enum: [force_resend_queued]
+    RetryFailedResponse:
+      type: object
+      required: [campaignId, sendJobId, status]
+      properties:
+        campaignId:
+          type: string
+        sendJobId:
+          type: string
+        status:
+          type: string
+          enum: [retry_failed_queued]
     ErrorResponse:
       type: object
       required: [error]

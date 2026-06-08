@@ -32,11 +32,20 @@ export class CampaignRecipientRepository {
         contactId: contacts.id,
         email: contacts.email,
         name: contacts.name,
-        personalizationData: contacts.personalizationData
+        personalizationData: contacts.personalizationData,
+        sendStatus: campaignRecipients.sendStatus
       })
       .from(campaignRecipients)
       .innerJoin(contacts, eq(campaignRecipients.contactId, contacts.id))
       .where(eq(campaignRecipients.campaignId, campaignId));
+  }
+
+  async listRecipientIds(campaignId: string): Promise<string[]> {
+    const rows = await this.db
+      .select({ contactId: campaignRecipients.contactId })
+      .from(campaignRecipients)
+      .where(eq(campaignRecipients.campaignId, campaignId));
+    return rows.map(row => row.contactId);
   }
 
   async updateVariableValidation(campaignId: string, contactId: string, missingVariables: string[], fallbackVariablesUsed: string[]): Promise<void> {

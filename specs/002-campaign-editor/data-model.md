@@ -22,6 +22,26 @@ screen.
 operator restriction from `Campaign.assignedOperatorId` applies to every editor
 action.
 
+## EditorAssignmentFilter
+
+**Purpose**: Represents the main campaign page selection used to choose which
+editor/operator's campaigns are visible and selectable before opening a campaign
+editor.
+
+**Fields**: `selectedEditorId`, `availableEditors`, `campaigns`, `callerRole`.
+
+**Validation**:
+- Non-admin operators can only use their own user id as `selectedEditorId`.
+- Admins can select any editor that has campaign assignments visible to the
+  admin.
+- Campaigns shown for a selected editor must all have
+  `assignedOperatorId === selectedEditorId`.
+- If no campaigns exist for the selected editor, the page shows an empty state
+  and does not auto-select a different campaign.
+
+**Relationships**: Filters the existing `Campaign` entity by
+`assignedOperatorId` before the `CampaignEditorDraft` is opened.
+
 ## EditorContent
 
 **Purpose**: The sanitized campaign body produced by toolbar-controlled rich text
@@ -69,7 +89,7 @@ recipient variables.
 
 **Fields**: `campaignId`, `contactId`, `contactEmail`, `contactName`,
 `sendStatus`, `providerMessageId`, `lastAttemptAt`, `failureReason`,
-`requiresReview`, `forceResendAllowed`.
+`requiresReview`, `forceResendAllowed`, `retryFailedAllowed`.
 
 **States**:
 - `pending`: recipient has not been submitted yet.
@@ -83,6 +103,8 @@ recipient variables.
 **Validation**:
 - Automatic recovery can target only recipients that are safe to send without
   duplication.
+- `failed` recipients expose `retryFailedAllowed` and can be queued for retry
+  without duplicate-risk acknowledgement.
 - `submitted` and `uncertain` recipients are never automatically sent again.
 - `uncertain` recipients can be force-resent only by the assigned operator after
   explicit acknowledgement.

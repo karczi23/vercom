@@ -82,7 +82,7 @@ normal send until resolved according to the mailing campaigns feature.
 **Rationale**: Branch 002 must contain only editor-related changes. The API
 contract in this feature therefore documents new or refined endpoints only, and
 depends on the feature-001 mailing campaign contract for base campaign/contact
-CRUD, authentication, rate limiting, and send job behavior.
+CRUD, authentication, and send job behavior.
 
 **Alternatives considered**:
 - Redefine the full campaign API: rejected because it would mix feature-001
